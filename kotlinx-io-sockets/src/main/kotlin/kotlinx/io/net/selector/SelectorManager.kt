@@ -3,17 +3,27 @@ package kotlinx.io.net.selector
 /**
  * A selectable entity that could be processed by [SelectorManager].
  * One selectable could be associated only with one particular [SelectorManager].
+ *
+ * [SelectorManager] implementation MUST respect the following rule: one selectable could be added at most to one
+ * local heap ([SelectablesHeap]) and at most one safe heap ([SafeSelectablesHeap]).
  */
-expect class Selectable {
+expect abstract class Selectable {
     internal var id: Int
 
     internal var localHeapIndex: Int
     internal var safeHeapIndex: Int
 
-    internal var readyOps: Int
-    internal var interestOps: Int
+    internal val readyOps: Int
+    internal val interestedOps: Int
 
-    fun close()
+    internal val suspensions: InterestSuspensionsMap
+
+    internal fun addInterest(flag: Int): Boolean
+    internal fun removeInterest(flag: Int): Boolean
+
+    internal fun checkReady(flag: Int): Boolean
+
+    open fun close()
 }
 
 /**
@@ -53,11 +63,11 @@ interface SelectorManager {
     fun close()
 
     companion object {
-        val DefaultSelectorManager = DefaultSelectorManagerImpl
+//        val DefaultSelectorManager = DefaultSelectorManagerImpl
     }
 }
 
-internal expect val DefaultSelectorManagerImpl: SelectorManager
+//internal expect val DefaultSelectorManagerImpl: SelectorManager
 
 expect enum class SelectInterest {
     READ,
@@ -69,15 +79,7 @@ expect enum class SelectInterest {
 
     companion object {
         val AllInterests: Array<SelectInterest>
+        val size: Int
         internal val flags: IntArray
     }
 }
-
-private val byFlags = Array(SelectInterest.values().maxBy { it.flag }!!.flag + 1) { flag ->
-    SelectInterest.values().firstOrNull { it.flag == flag }
-}
-
-internal fun SelectInterest.Companion.byFlag(flag: Int): SelectInterest =
-    (if (flag in 0 until byFlags.size) byFlags[flag] else null)
-            ?: throw IllegalArgumentException("SelectInterest not found for flag $flag")
-

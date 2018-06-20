@@ -1,0 +1,29 @@
+konanArtifacts {
+    library('kotlinx_io_sockets_native') {
+        enableMultiplatform true
+    }
+
+    if (!project.hasProperty("deploy")) {
+        program('native_test') {
+            srcDir 'src/test/kotlin'
+            enableMultiplatform true
+            commonSourceSet 'test'
+            libraries {
+                artifact 'kotlinx_io_sockets_native'
+            }
+            extraOpts '-tr'
+        }
+    }
+}
+
+dependencies {
+    expectedBy project(":kotlinx-io-sockets")
+}
+
+afterEvaluate {
+    apply from: rootProject.file('gradle/publish.gradle')
+}
+
+apply from: rootProject.file('gradle/bintray.gradle')
+
+task test(dependsOn: run)
