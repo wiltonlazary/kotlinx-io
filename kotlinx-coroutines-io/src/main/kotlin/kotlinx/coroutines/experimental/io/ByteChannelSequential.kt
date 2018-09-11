@@ -65,7 +65,7 @@ private suspend fun ByteChannelSequentialBase.copyToTail(dst: ByteChannelSequent
 abstract class ByteChannelSequentialBase(initial: IoBuffer, override val autoFlush: Boolean) : ByteChannel, ByteReadChannel, ByteWriteChannel, SuspendableReadSession {
     protected var closed = false
     protected val writable = BytePacketBuilder(0)
-    protected val readable = ByteReadPacket(initial, IoBuffer.Pool)
+    protected val readable = ConcurrentPipe(initial, IoBuffer.Pool)
 
     internal val notFull = Condition { totalPending() <= 4088L }
 
@@ -73,7 +73,8 @@ abstract class ByteChannelSequentialBase(initial: IoBuffer, override val autoFlu
     private val atLeastNBytesAvailableForWrite = Condition { availableForWrite >= waitingForSize || closed }
 
     private var waitingForRead = 1
-    private val atLeastNBytesAvailableForRead = Condition { availableForRead >= waitingForRead || closed }
+    private val atLeastNBytesAvailableForRead =
+        Condition { (availableForRead >= waitingForRead && readable.hasFastpathBytes(1)) || closed }
 
     @Suppress("NOTHING_TO_INLINE")
     private inline fun totalPending() = readable.remaining.toInt() + writable.size
@@ -116,9 +117,10 @@ abstract class ByteChannelSequentialBase(initial: IoBuffer, override val autoFlu
 
     override fun flush() {
         if (writable.isNotEmpty) {
-            @Suppress("DEPRECATION_ERROR")
-            readable.`$unsafeAppend$`(writable)
-            atLeastNBytesAvailableForRead.signal()
+            writable.stealAll()?.let { head ->
+                readable.appendChain(head)
+                atLeastNBytesAvailableForRead.signal()
+            }
         }
     }
 
@@ -250,7 +252,7 @@ abstract class ByteChannelSequentialBase(initial: IoBuffer, override val autoFlu
     }
 
     override suspend fun readShort(): Short {
-        return if (readable.hasBytes(2)) {
+        return if (readable.hasFastpathBytes(2)) {
             readable.readShort().also { afterRead() }
         } else {
             readShortSlow()
@@ -267,7 +269,7 @@ abstract class ByteChannelSequentialBase(initial: IoBuffer, override val autoFlu
     }
 
     override suspend fun readInt(): Int {
-        return if (readable.hasBytes(4)) {
+        return if (readable.hasFastpathBytes(4)) {
             readable.readInt().also { afterRead() }
         } else {
             readIntSlow()
@@ -279,7 +281,7 @@ abstract class ByteChannelSequentialBase(initial: IoBuffer, override val autoFlu
     }
 
     override suspend fun readLong(): Long {
-        return if (readable.hasBytes(8)) {
+        return if (readable.hasFastpathBytes(8)) {
             readable.readLong().also { afterRead() }
         } else {
             readLongSlow()
@@ -291,7 +293,7 @@ abstract class ByteChannelSequentialBase(initial: IoBuffer, override val autoFlu
     }
 
     override suspend fun readFloat(): Float {
-        return if (readable.hasBytes(4)) {
+        return if (readable.hasFastpathBytes(4)) {
             readable.readFloat().also { afterRead() }
         } else {
             readFloatSlow()
@@ -303,7 +305,7 @@ abstract class ByteChannelSequentialBase(initial: IoBuffer, override val autoFlu
     }
 
     override suspend fun readDouble(): Double {
-        return if (readable.hasBytes(8)) {
+        return if (readable.hasFastpathBytes(8)) {
             readable.readDouble().also { afterRead() }
         } else {
             readDoubleSlow()
@@ -316,8 +318,13 @@ abstract class ByteChannelSequentialBase(initial: IoBuffer, override val autoFlu
 
     override suspend fun readRemaining(limit: Long, headerSizeHint: Int): ByteReadPacket {
         val builder = BytePacketBuilder(headerSizeHint)
+        if (limit < readable.remaining) {
+            require(limit <= Int.MAX_VALUE.toLong())
+            builder.writePacketLike(readable, limit.toInt())
+        } else {
+            builder.writePacketLike(readable)
+        }
 
-        builder.writePacket(readable, minOf(limit, readable.remaining))
         val remaining = limit - builder.size
 
         return if (remaining == 0L || (readable.isEmpty && closed)) {
@@ -329,7 +336,7 @@ abstract class ByteChannelSequentialBase(initial: IoBuffer, override val autoFlu
 
     private suspend fun readRemainingSuspend(builder: BytePacketBuilder, limit: Long): ByteReadPacket {
         while (builder.size < limit) {
-            builder.writePacket(readable)
+            builder.writePacketLike(readable)
             afterRead()
 
             if (writable.size == 0 && closed) break
@@ -346,7 +353,7 @@ abstract class ByteChannelSequentialBase(initial: IoBuffer, override val autoFlu
         var remaining = size
         val partSize = minOf(remaining.toLong(), readable.remaining).toInt()
         remaining -= partSize
-        builder.writePacket(readable, partSize)
+        builder.writePacketLike(readable, partSize)
         afterRead()
 
         return if (remaining > 0) readPacketSuspend(builder, remaining)
@@ -358,7 +365,7 @@ abstract class ByteChannelSequentialBase(initial: IoBuffer, override val autoFlu
         while (remaining > 0) {
             val partSize = minOf(remaining.toLong(), readable.remaining).toInt()
             remaining -= partSize
-            builder.writePacket(readable, partSize)
+            builder.writePacketLike(readable, partSize)
             afterRead()
 
             if (remaining > 0) {
@@ -604,7 +611,7 @@ abstract class ByteChannelSequentialBase(initial: IoBuffer, override val autoFlu
     internal fun transferTo(dst: ByteChannelSequentialBase, limit: Long): Long {
         val size = readable.remaining
         return if (size <= limit) {
-            dst.writable.writePacket(readable)
+            dst.writable.writePacketLike(readable)
             dst.afterWrite()
             afterRead()
             size
@@ -615,9 +622,18 @@ abstract class ByteChannelSequentialBase(initial: IoBuffer, override val autoFlu
 
     private suspend inline fun readNSlow(n: Int, block: () -> Nothing): Nothing {
         do {
-            awaitSuspend(n)
+            awaitSuspend(n) // TODO await also while head is locked by write append
 
-            if (readable.hasBytes(n)) block()
+            if (readable.hasBytes(n)) {
+                if (!readable.hasFastpathBytes(n)) {
+                    if (readable.`$prepareRead$`(n) == null) {
+                        continue
+                    }
+                }
+
+                block()
+            }
+
             checkClosed(n)
         } while (true)
     }

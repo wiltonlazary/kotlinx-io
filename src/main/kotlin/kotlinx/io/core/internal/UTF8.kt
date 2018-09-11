@@ -15,10 +15,7 @@ internal inline fun IoBuffer.decodeASCII(consumer: (Char) -> Boolean): Boolean {
 }
 
 @DangerousInternalIoApi
-suspend fun decodeUTF8LineLoopSuspend(
-    out: Appendable,
-    limit: Int,
-    nextChunk: suspend (Int) -> ByteReadPacketBase?
+suspend fun decodeUTF8LineLoopSuspend(out: Appendable, limit: Int, nextChunk: suspend (Int) -> ByteReadPacketBase?
 ): Boolean {
     var decoded = 0
     var size = 1
