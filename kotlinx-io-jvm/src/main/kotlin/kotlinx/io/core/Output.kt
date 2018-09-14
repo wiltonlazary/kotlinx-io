@@ -1,6 +1,7 @@
 package kotlinx.io.core
 
 import kotlinx.io.core.internal.*
+import kotlinx.io.core.internal.*
 import java.nio.*
 
 /**
