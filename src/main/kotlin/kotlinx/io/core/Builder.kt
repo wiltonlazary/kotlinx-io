@@ -536,10 +536,14 @@ abstract class BytePacketBuilderBase internal constructor(protected val pool: Ob
         var remaining = n
 
         while (remaining > 0) {
-            val headRemaining = p.headRemaining
-            if (headRemaining <= remaining) {
-                remaining -= headRemaining
-                last(p.steal() ?: throw EOFException("Unexpected end of packet"))
+            if (p.tryPrepareContinuousRegionAtMost(remaining)) {
+                val chunk = p.steal() ?: throw EOFException("Unexpected end of packet")
+
+                val size = chunk.readRemaining
+                check(size <= remaining)
+                remaining -= size
+
+                last(chunk)
             } else {
                 p.read { view ->
                     writeFully(view, remaining)
@@ -556,10 +560,14 @@ abstract class BytePacketBuilderBase internal constructor(protected val pool: Ob
         var remaining = n
 
         while (remaining > 0L) {
-            val headRemaining = p.headRemaining.toLong()
-            if (headRemaining <= remaining) {
-                remaining -= headRemaining
-                last(p.steal() ?: throw EOFException("Unexpected end of packet"))
+            if (p.tryPrepareContinuousRegionAtMost(remaining)) {
+                val chunk = p.steal() ?: throw EOFException("Unexpected end of packet")
+
+                val size = chunk.readRemaining
+                check(size <= remaining)
+                remaining -= size
+
+                last(chunk)
             } else {
                 p.read { view ->
                     writeFully(view, remaining.toInt())
