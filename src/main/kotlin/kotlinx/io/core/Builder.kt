@@ -546,9 +546,10 @@ abstract class BytePacketBuilderBase internal constructor(protected val pool: Ob
                 last(chunk)
             } else {
                 p.read { view ->
-                    writeFully(view, remaining)
+                    val size = minOf(remaining, view.readRemaining)
+                    writeFully(view, size)
+                    remaining -= size
                 }
-                break
             }
         }
     }
@@ -570,9 +571,10 @@ abstract class BytePacketBuilderBase internal constructor(protected val pool: Ob
                 last(chunk)
             } else {
                 p.read { view ->
-                    writeFully(view, remaining.toInt())
+                    val size = minOf(remaining, view.readRemaining.toLong())
+                    writeFully(view, size.toInt())
+                    remaining -= size
                 }
-                break
             }
         }
     }
