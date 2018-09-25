@@ -64,7 +64,6 @@ internal class ByteChannelNative(initial: IoBuffer, autoFlush: Boolean) : ByteCh
         }
     }
 
-
     override suspend fun readAvailable(dst: CPointer<ByteVar>, offset: Int, length: Int): Int {
         return readAvailable(dst, offset.toLong(), length.toLong())
     }

@@ -1,5 +1,7 @@
 package kotlinx.coroutines.io
 
+import kotlinx.atomicfu.*
+import kotlinx.coroutines.*
 import kotlinx.io.core.*
 import kotlinx.io.core.internal.*
 
@@ -79,6 +81,8 @@ abstract class ByteChannelSequentialBase(initial: IoBuffer, override val autoFlu
     @Suppress("NOTHING_TO_INLINE")
     private inline fun totalPending() = readable.remaining.toInt() + writable.size
 
+    private val attachedJob: AtomicRef<Job?> = atomic(null)
+
     override val availableForRead: Int
         get() = readable.remaining.toInt()
 
@@ -114,6 +118,20 @@ abstract class ByteChannelSequentialBase(initial: IoBuffer, override val autoFlu
 
     final override var closedCause: Throwable? = null
         private set
+
+    override fun attachJob(job: Job) {
+        attachedJob.getAndSet(job)?.let { oldJob ->
+            val e = IllegalStateException("Job is already attached")
+            oldJob.cancel(e)
+            throw e
+        }
+
+        job.invokeOnCompletion { cause ->
+            if (attachedJob.compareAndSet(job, null)) {
+                cancel(cause)
+            }
+        }
+    }
 
     override fun flush() {
         if (writable.isNotEmpty) {
@@ -606,8 +624,17 @@ abstract class ByteChannelSequentialBase(initial: IoBuffer, override val autoFlu
         } else {
             flush()
         }
-        atLeastNBytesAvailableForRead.signal()
-        atLeastNBytesAvailableForWrite.signal()
+
+        if (cause != null) {
+            notFull.cancel(cause)
+            atLeastNBytesAvailableForRead.cancel(cause)
+            atLeastNBytesAvailableForWrite.cancel(cause)
+        } else {
+            notFull.signal()
+            atLeastNBytesAvailableForRead.signal()
+            atLeastNBytesAvailableForWrite.signal()
+        }
+
         return true
     }
 
