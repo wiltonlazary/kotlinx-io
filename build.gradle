@@ -58,42 +58,7 @@ allprojects {
     def useExperimentalOptionString = "-Xuse-experimental=${useExperimentalAnnotations.join(",")}"
 
     if (platform == 'native') {
-        sourceSets {
-            main {
-                component {
-                    targets = [ 'ios_arm64', 'ios_arm32', 'ios_x64', 'macos_x64', 'linux_x64', 'mingw_x64' ]
-//                    target 'ios_arm64', 'ios_arm32', 'ios_x64', 'macos_x64', 'linux_x64'
-                    outputKinds = [KLIBRARY]
-                    extraOpts useExperimentalOptionString
-                }
-            }
-            test {
-                component {
-                    extraOpts useExperimentalOptionString
-                }
-            }
-        }
-    } else if (platform == 'common') {
-        compileKotlinCommon {
-            kotlinOptions.freeCompilerArgs += [useExperimentalOptionString]
-        }
-        compileTestKotlinCommon {
-            kotlinOptions.freeCompilerArgs += [useExperimentalOptionString]
-        }
-    } else if (platform == 'jvm') {
-        compileKotlin {
-            kotlinOptions.freeCompilerArgs += [useExperimentalOptionString]
-        }
-        compileTestKotlin {
-            kotlinOptions.freeCompilerArgs += [useExperimentalOptionString]
-        }
-    } else if (platform == 'js') {
-        compileKotlin2Js {
-            kotlinOptions.freeCompilerArgs += [useExperimentalOptionString]
-        }
-        compileTestKotlin2Js {
-            kotlinOptions.freeCompilerArgs += [useExperimentalOptionString]
-        }
+        apply from: rootProject.file('gradle/native.gradle')
     } else if (platform == 'common') {
         apply from: rootProject.file('gradle/common.gradle')
     } else if (platform == 'jvm') {
