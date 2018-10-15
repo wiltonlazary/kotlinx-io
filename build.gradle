@@ -50,12 +50,7 @@ allprojects {
     apply plugin: 'maven-publish'
     apply plugin: 'com.jfrog.bintray'
 
-    def useExperimentalAnnotations = [
-            'kotlin.Experimental',
-            'kotlinx.io.core.internal.DangerousInternalIoApi',
-            'kotlinx.io.core.ExperimentalIoApi'
-    ]
-    def useExperimentalOptionString = "-Xuse-experimental=${useExperimentalAnnotations.join(",")}"
+    apply from: rootProject.file("gradle/experimental.gradle")
 
     if (platform == 'native') {
         apply from: rootProject.file('gradle/native.gradle')

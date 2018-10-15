@@ -1,0 +1,7 @@
+def useExperimentalAnnotations = [
+        'kotlin.Experimental',
+        'kotlinx.io.core.internal.DangerousInternalIoApi',
+        'kotlinx.io.core.ExperimentalIoApi'
+]
+
+ext.useExperimentalOptionString = "-Xuse-experimental=${useExperimentalAnnotations.join(",")}"
