@@ -187,7 +187,7 @@ abstract class AbstractInput(
     head: IoBuffer = IoBuffer.Empty,
     remaining: Long = head.remainingAll(),
     pool: ObjectPool<IoBuffer> = IoBuffer.Pool
-) : ByteReadPacketPlatformBase(head, remaining, pool) {
+) : NonConcurrentByteReadPacketBase(head, remaining, pool) {
     abstract override fun fill(): IoBuffer?
     abstract override fun closeSource()
 }
