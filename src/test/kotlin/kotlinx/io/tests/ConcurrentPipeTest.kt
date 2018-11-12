@@ -147,13 +147,13 @@ class ConcurrentPipeTest {
 
             val buffer = pipe.steal()
             assertNotNull(buffer)
-            assertEquals(4, buffer.readRemaining)
+            assertEquals(4, buffer!!.readRemaining)
 
             assertEquals(8, pipe.bytesRead)
 
             val buffer2 = pipe.steal()
             assertNotNull(buffer2)
-            assertEquals(8, buffer2.readRemaining)
+            assertEquals(8, buffer2!!.readRemaining)
 
             assertEquals(16, pipe.bytesRead)
         } finally {
