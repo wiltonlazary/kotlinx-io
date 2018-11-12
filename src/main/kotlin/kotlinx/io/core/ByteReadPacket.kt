@@ -118,31 +118,29 @@ abstract class NonConcurrentByteReadPacketBase constructor(
     }
 
     final override tailrec fun ensureNext(current: IoBuffer, empty: IoBuffer): IoBuffer? {
-        val next = if (current === empty) {
-            doFill()
-        } else {
-            current.next.also { current.release(pool) } ?: doFill()
+        if (current === empty) {
+            return doFill()
         }
 
-        if (next == null) {
-            if (head !== empty) {
-                head = empty
-                headRemaining = 0
-                tailRemaining = 0L
+        val next = current.next
+        current.release(pool)
+
+        return when {
+            next == null -> {
+                this.headRemaining = 0
+                this.tailRemaining = 0L
+                this.head = empty
+                ensureNext(empty, empty)
             }
-
-            return null
-        }
-
-        if (next.canRead()) {
-            head = next
-            next.byteOrder = byteOrder
-            val nextRemaining = next.readRemaining
-            headRemaining = nextRemaining
-            tailRemaining -= nextRemaining
-            return next
-        } else {
-            return ensureNext(next, empty)
+            next.canRead() -> {
+                head = next
+                next.byteOrder = byteOrder
+                val nextRemaining = next.readRemaining
+                headRemaining = nextRemaining
+                tailRemaining -= nextRemaining
+                next
+            }
+            else -> ensureNext(next, empty)
         }
     }
 
