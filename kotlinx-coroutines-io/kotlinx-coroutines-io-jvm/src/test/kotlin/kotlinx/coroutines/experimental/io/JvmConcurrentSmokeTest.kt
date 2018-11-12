@@ -1,6 +1,7 @@
 package kotlinx.coroutines.experimental.io
 
 import kotlinx.coroutines.*
+import kotlinx.coroutines.io.*
 import kotlinx.io.core.*
 import java.nio.*
 import kotlin.random.*
