@@ -60,4 +60,4 @@ public expect class Buffer {
     }
 }
 
-internal expect fun bufferOf(array: ByteArray, start: Int, end: Int): Buffer
+internal expect fun bufferOf(array: ByteArray, start: Int = 0, end: Int = array.size): Buffer

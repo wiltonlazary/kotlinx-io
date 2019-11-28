@@ -17,10 +17,10 @@ fun Output.writeUtf8String(text: CharSequence, index: Int = 0, length: Int = tex
     var bytes = 0 // current left bytes to write (in inverted order)
 
     while (textIndex < textEndIndex || bytes != 0) {
-        writeBufferRange { buffer, startOffset, endOffset ->
+        writeBufferRange { buffer, startOffset ->
             var offset = startOffset
 
-            while (offset <= endOffset) {
+            while (offset < buffer.size) {
                 if (bytes != 0) {
                     // write remaining bytes of multibyte sequence
                     buffer[offset++] = (bytes and 0xFF).toByte()
@@ -55,7 +55,7 @@ fun Output.writeUtf8String(text: CharSequence, index: Int = 0, length: Int = tex
                     code < 0x7ff -> {
                         buffer[offset++] = (0xc0 or ((code shr 6) and 0x1f)).toByte()
                         val byte1 = (code and 0x3f) or 0x80
-                        if (offset <= endOffset) {
+                        if (offset < buffer.size) {
                             buffer[offset++] = byte1.toByte()
                         } else {
                             bytes = byte1
@@ -65,7 +65,7 @@ fun Output.writeUtf8String(text: CharSequence, index: Int = 0, length: Int = tex
                         buffer[offset++] = ((code shr 12) and 0x0f or 0xe0).toByte()
                         val byte1 = ((code shr 6) and 0x3f) or 0x80
                         val byte2 = (code and 0x3f) or 0x80
-                        if (offset + 1 <= endOffset) {
+                        if (offset + 1 < buffer.size) {
                             buffer[offset++] = byte1.toByte()
                             buffer[offset++] = byte2.toByte()
                         } else {
@@ -77,7 +77,7 @@ fun Output.writeUtf8String(text: CharSequence, index: Int = 0, length: Int = tex
                         val byte1 = ((code shr 12) and 0x3f) or 0x80
                         val byte2 = ((code shr 6) and 0x3f) or 0x80
                         val byte3 = (code and 0x3f) or 0x80
-                        if (offset + 2 <= endOffset) {
+                        if (offset + 2 < buffer.size) {
                             buffer[offset++] = byte1.toByte()
                             buffer[offset++] = byte2.toByte()
                             buffer[offset++] = byte3.toByte()

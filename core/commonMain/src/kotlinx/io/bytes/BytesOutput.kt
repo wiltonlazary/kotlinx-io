@@ -33,8 +33,8 @@ public class BytesOutput(
         return BytesInput(bytes.snapshot(), bufferSize)
     }
 
-    override fun flush(source: Buffer, length: Int) {
-        bytes.append(source, length)
+    override fun flush(source: Buffer, endIndex: Int) {
+        bytes.append(source, endIndex)
     }
 
     override fun closeSource() {

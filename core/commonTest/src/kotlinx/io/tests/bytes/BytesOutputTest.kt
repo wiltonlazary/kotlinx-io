@@ -1,5 +1,6 @@
 package kotlinx.io.tests.bytes
 
+import kotlinx.io.*
 import kotlinx.io.bytes.*
 import kotlinx.io.tests.*
 import kotlin.test.*
@@ -14,6 +15,7 @@ class BytesOutputTest {
 
         val outputSize = output.size
 
+        assertEquals(8 + 8 * 1024 + 1, outputSize)
         val first = output.createInput()
         val second = output.createInput()
 

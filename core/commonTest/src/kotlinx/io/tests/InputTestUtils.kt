@@ -49,6 +49,11 @@ fun sequentialLimitedInput(
         }
     }
 
+class LambdaInput(private val block: (buffer: Buffer) -> Int) : Input() {
+    override fun closeSource() {}
+    override fun fill(buffer: Buffer): Int = block(buffer)
+}
+
 fun Input.assertReadLong(expected: Long) {
     val value = readLong()
     if (value == expected) return

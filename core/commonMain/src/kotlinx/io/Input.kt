@@ -211,6 +211,18 @@ public abstract class Input : Closeable {
     }
 
     /**
+     * 1. Output & Input is empty
+     * 2. Output is Empty
+     */
+    public fun readAvailableTo(output: Output) {
+        if (position == limit) {
+            fillBuffer()
+        }
+
+        output.writeBufferDirect(buffer, position, limit)
+    }
+
+    /**
      * Allows reading from [Input] in the [reader] block without consuming its content.
      *
      * This operation saves the state of the [Input] before [reader] and accumulates buffers for replay.
@@ -415,9 +427,9 @@ public abstract class Input : Closeable {
 
     /**
      * Prepares this Input for reading from the next buffer, either by filling it from the underlying source
-     * or loading from a [previewBytes] after a [preview] operation or if reading from pre-supplied [Bytes]
+     * or loading from a [previewBytes] after a [preview] operation or if reading from pre-supplied [Bytes].
      *
-     * Current [buffer] should be exhausted at this moment, i.e. [position] should be equal to [limit]
+     * Current [buffer] should be exhausted at this moment, i.e. [position] should be equal to [limit].
      */
     private fun fetchBuffer(): Int {
         val discard = previewDiscard

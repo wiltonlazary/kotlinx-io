@@ -1,5 +1,8 @@
 package kotlinx.io
 
+import kotlinx.io.buffer.*
+import kotlin.math.*
+
 /**
  * Write a [value] to this [Input].
  */
@@ -24,6 +27,20 @@ public fun Output.writeUInt(value: UInt): Unit = writeInt(value.toInt())
 @ExperimentalUnsignedTypes
 public fun Output.writeULong(value: ULong): Unit = writeLong(value.toLong())
 
+/**
+ * Write an [array] to this [Input].
+ */
+public fun Output.writeByteArray(array: ByteArray, startIndex: Int = 0, endIndex: Int = array.size) {
+    var offset = startIndex
+    while (offset < endIndex) {
+        writeBufferRange { buffer, start ->
+            val count = min(buffer.size - start, endIndex - offset)
+            buffer.storeByteArray(start, array, offset, count)
+            offset += count
+            start + count
+        }
+    }
+}
 /**
  * Write an [array] to this [Input].
  *

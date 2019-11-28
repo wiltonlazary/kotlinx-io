@@ -45,9 +45,9 @@ private object SystemIn : Input() {
 
 private object SystemOut : Output() {
 
-    override fun flush(source: Buffer, length: Int) {
+    override fun flush(source: Buffer, endIndex: Int) {
         val out = System.out
-        for (i in 0 until length) {
+        for (i in 0 until endIndex) {
             out.write(source[i].toInt())
         }
         out.flush()
@@ -61,9 +61,9 @@ private object SystemOut : Output() {
 
 private object SystemErr : Output() {
 
-    override fun flush(source: Buffer, length: Int) {
+    override fun flush(source: Buffer, endIndex: Int) {
         val out = System.err
-        for (i in 0 until length) {
+        for (i in 0 until endIndex) {
             out.write(source[i].toInt())
         }
         out.flush()

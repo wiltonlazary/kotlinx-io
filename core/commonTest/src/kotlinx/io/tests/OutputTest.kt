@@ -1,5 +1,7 @@
 package kotlinx.io.tests
 
+import kotlinx.io.*
+import kotlinx.io.buffer.*
 import kotlinx.io.bytes.*
 import kotlin.test.*
 
@@ -42,5 +44,62 @@ class OutputTest {
             assertReadInt(0xDEAD)
             assertTrue(eof())
         }
+    }
+
+    @Test
+    @Ignore
+    fun testPipeFromEmpty() {
+        val source = buildInput {
+        }
+
+        val result = buildInput {
+//            pipeFrom(source)
+        }
+
+        assertTrue(result.eof())
+    }
+
+    @Test
+    @Ignore
+    fun testPipeFrom() {
+        var startWrite = false
+
+        val source = buildInput {
+            startWrite = true
+            writeByte(42)
+        }
+
+        val result = buildInput {
+//            pipeFrom(source)
+        }
+
+        assertFalse(startWrite)
+        result.assertReadByte(42)
+        assertTrue(startWrite)
+        assertTrue(result.eof())
+    }
+
+    @Test
+    @Ignore
+    fun testPipeFromInfinite() {
+        val output = BytesOutput()
+//        output.pipeFrom(TestInput())
+
+        output.createInput().apply {
+            repeat(100) {
+                assertReadByte(42)
+            }
+        }
+    }
+}
+
+private class TestInput : Input() {
+
+    override fun fill(buffer: Buffer): Int {
+        buffer.storeByteAt(0, 42)
+        return 1
+    }
+
+    override fun closeSource() {
     }
 }

@@ -68,14 +68,15 @@ public abstract class Output(
     }
 
     /**
-     * Write an [array] to this [Input].
-     *
-     * TODO: measure
+     * Bypass [data] from [startOffset] to [endOffset] by using [Output.flush].
+     * If [Output] is not empty, all data will flushed beforehand.
      */
-    public fun writeByteArray(array: ByteArray) {
-        for (byte in array) {
-            writeByte(byte)
+    public fun writeBufferDirect(data: Buffer, startOffset: Int = 0, endOffset: Int = data.size) {
+        if (position != 0) {
+            flushBuffer()
         }
+        val endIndex = data.compact(startOffset, endOffset)
+        flush(data, endIndex)
     }
 
     /**
@@ -119,7 +120,7 @@ public abstract class Output(
      *
      * May block until destination has no available space.
      */
-    protected abstract fun flush(source: Buffer, length: Int)
+    protected abstract fun flush(source: Buffer, endIndex: Int)
 
     private fun flushBuffer() {
         flush(buffer, position)
@@ -127,16 +128,20 @@ public abstract class Output(
         position = 0
     }
 
-    internal inline fun writeBufferRange(writer: (buffer: Buffer, startOffset: Int, endOffset: Int) -> Int) {
+    /**
+     * Call [writer] block with [buffer] and write startOffset
+     *
+     * The [writer] expected to return new [buffer] position.
+     */
+    internal inline fun writeBufferRange(writer: (buffer: Buffer, startOffset: Int) -> Int) {
         var startOffset = position
-        var endOffset = buffer.size - 1
-        if (startOffset > endOffset) {
+
+        if (startOffset >= buffer.size) {
             flushBuffer()
             startOffset = position
-            endOffset = buffer.size - 1
         }
 
-        val newPosition = writer(buffer, startOffset, endOffset)
+        val newPosition = writer(buffer, startOffset)
         position = newPosition
     }
 

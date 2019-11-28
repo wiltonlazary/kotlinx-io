@@ -24,12 +24,12 @@ public class ByteArrayOutput(initialCapacity: Int = 16) : Output() {
     public fun toByteArray(): ByteArray = array.copyOf(size)
 
     /** @suppress */
-    override fun flush(source: Buffer, length: Int) {
-        ensureCapacity(length)
-        for (i in 0 until length) {
+    override fun flush(source: Buffer, endIndex: Int) {
+        ensureCapacity(endIndex)
+        for (i in 0 until endIndex) {
             array[size + i] = source[i]
         }
-        size += length
+        size += endIndex
     }
 
     /** @suppress */
