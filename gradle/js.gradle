@@ -36,6 +36,7 @@ kotlin {
 }
 
 compileKotlinJs {
+    kotlinOptions.freeCompilerArgs += ["-Xir-produce-klib-dir", "-Xir-only"]
     kotlinOptions.metaInfo = true
     kotlinOptions.sourceMap = true
     kotlinOptions.moduleKind = 'umd'
@@ -44,6 +45,7 @@ compileKotlinJs {
 }
 
 compileTestKotlinJs {
+    kotlinOptions.freeCompilerArgs += ["-Xir-only", "-Xir-produce-js", "-Xir-dce"]
     kotlinOptions.metaInfo = true
     kotlinOptions.sourceMap = true
     kotlinOptions.moduleKind = 'umd'
