@@ -3,6 +3,25 @@ package kotlinx.io
 import kotlinx.io.buffer.*
 
 /**
+ * Copy input content to [destination].
+ *
+ * @return transferred bytes count.
+ */
+public fun Input.copyTo(destination: Output): Int {
+    var result = 0
+    while (true) {
+        val chunkSize = copyAvailableTo(destination)
+        if (chunkSize <= 0) {
+            break
+        }
+
+        result += chunkSize
+    }
+
+    return result
+}
+
+/**
  * Read [length] bytes from [Input] to [array] from [startIndex].
  *
  * @throws EOFException if not enough bytes available.

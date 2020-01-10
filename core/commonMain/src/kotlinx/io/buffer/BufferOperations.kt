@@ -45,7 +45,7 @@ expect fun Buffer.fill(offset: Int, count: Int, value: Byte)
  * to the [destination] at [destinationOffset].
  * Copying bytes from a buffer to itself is allowed.
  */
-expect fun Buffer.copyTo(destination: Buffer, offset: Int, length: Int, destinationOffset: Int)
+expect fun Buffer.copyTo(destination: Buffer, offset: Int, length: Int, destinationOffset: Int = 0)
 
 /**
  * Copies bytes from this buffer range from the specified [offset] and [length]

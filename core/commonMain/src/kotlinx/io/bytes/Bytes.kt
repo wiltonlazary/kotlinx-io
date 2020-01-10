@@ -79,17 +79,6 @@ internal class Bytes {
     }
 
     /**
-     * Compact arrays after several discards.
-     */
-    private fun compactBuffers() {
-        buffers.copyInto(buffers, 0, head, tail)
-        limits.copyInto(limits, 0, head, tail)
-        tail -= head
-        head = 0
-    }
-
-
-    /**
      * Create bytes snapshot without copying content of [buffers].
      */
     fun snapshot(): Bytes = Bytes().also {
@@ -103,6 +92,16 @@ internal class Bytes {
     }
 
     override fun toString() = "Bytes($head..$tail)"
+
+    /**
+     * Compact arrays after several discards.
+     */
+    private fun compactBuffers() {
+        buffers.copyInto(buffers, 0, head, tail)
+        limits.copyInto(limits, 0, head, tail)
+        tail -= head
+        head = 0
+    }
 
     companion object {
         private const val INITIAL_PREVIEW_SIZE = 1

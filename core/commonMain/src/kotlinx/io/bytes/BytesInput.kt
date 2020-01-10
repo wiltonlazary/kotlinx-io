@@ -10,7 +10,7 @@ import kotlinx.io.buffer.*
  */
 public class BytesInput internal constructor(
     bytes: Bytes,
-    bufferSize: Int
+    bufferSize: Int = DEFAULT_BUFFER_SIZE
 ) : Input(bytes, unmanagedPoolOfBuffers(bufferSize)) {
 
     /**
@@ -26,3 +26,5 @@ public class BytesInput internal constructor(
     override fun closeSource() {
     }
 }
+
+internal fun Bytes.createInput(): BytesInput = BytesInput(this)

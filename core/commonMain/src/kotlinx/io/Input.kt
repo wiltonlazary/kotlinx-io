@@ -211,15 +211,34 @@ public abstract class Input : Closeable {
     }
 
     /**
-     * 1. Output & Input is empty
-     * 2. Output is Empty
+     * Copy buffered bytes to [destination]. If no bytes buffered it will block until [fill] is finished.
+     *
+     * @return transferred bytes count.
      */
-    public fun readAvailableTo(output: Output) {
+    public fun copyAvailableTo(destination: Output): Int {
         if (position == limit) {
             fillBuffer()
         }
 
-        output.writeBufferDirect(buffer, position, limit)
+        destination.writeBufferDirect(buffer, position, limit)
+        val result = limit - position
+        position = limit
+        return result
+    }
+
+    /**
+     * Copy buffered bytes to [destination]. If no bytes buffered it will call [fill] on [destination] directly.
+     *
+     * @return transferred bytes count.
+     */
+    public fun copyAvailableTo(destination: Buffer): Int {
+        val count = limit - position
+        if (count == 0) {
+            return fill(destination)
+        }
+
+        buffer.copyTo(destination, position, count)
+        return count
     }
 
     /**
