@@ -4,8 +4,9 @@
     - Input: `eof` vs `exhausted`
     - Output: Appendable
     - `Input.discard()`, discardExact
-    - `readUtf8Line` throws if string ends wo `\n`
     - Idempotent close
+    - Bytes with Array<Buffer> can't be managed in native(efficient Buffer is CPointer + size)
+    - `copyAvailableTo` -> `copyBufferedTo`? Unclear what `Available` is when `copyTo` exists.
 - Implementation
     - Console: shared buffer
     - Input

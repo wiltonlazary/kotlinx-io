@@ -18,6 +18,7 @@ internal class Bytes {
      * Index of the first [Buffer] in [buffers].
      */
     var head: Int = 0
+        private set
 
     /**
      * Index of the last [Buffer] in [buffers].

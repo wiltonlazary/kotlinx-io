@@ -315,11 +315,13 @@ public abstract class Input : Closeable {
      * Reads the next bytes into the [buffer]
      * May block until at least one byte is available.
      *
+     * The source will not read more than [atMost] bytes.
+     *
      * TODO: ?? Usually bypass all exceptions from the underlying source.
      *
      * @return number of bytes were copied or `0` if no more input is available.
      */
-    protected abstract fun fill(buffer: Buffer): Int
+    protected abstract fun fill(buffer: Buffer, atMost: Int = buffer.size): Int
 
     /**
      * Read next bytes into the [destinations].
