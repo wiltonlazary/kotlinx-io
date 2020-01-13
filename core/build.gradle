@@ -3,6 +3,7 @@ plugins {
     id "maven-publish"
     id "kotlinx-atomicfu"
     id "jacoco"
+    id "org.jetbrains.dokka" version "0.10.0"
 }
 
 def ideaActive = System.getProperty('idea.active') == 'true'
@@ -163,4 +164,9 @@ task testCoverage(type: JacocoReport, dependsOn: jvmTest) {
 
         html.destination file("${buildDir}/jacoco-reports/html")
     }
+}
+
+dokka {
+    outputFormat = 'gfm'
+    outputDirectory = "$rootDir/doc"
 }

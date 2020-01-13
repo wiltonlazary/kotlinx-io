@@ -1,0 +1,46 @@
+[kotlinx-io](../../index.md) / [kotlinx.io.bytes](../index.md) / [BytesInput](./index.md)
+
+# BytesInput
+
+`class BytesInput : `[`Input`](../../kotlinx.io/-input/index.md)
+
+In memory byte source created from [BytesOutput](../-bytes-output/index.md) or by using [buildInput](../build-input.md).
+
+[BytesInput](./index.md) isn't pooled so it's safe to throw it away.
+
+### Properties
+
+| Name | Summary |
+|---|---|
+| [remaining](remaining.md) | Count of remaining bytes in [BytesInput](./index.md).`val remaining: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
+
+### Functions
+
+| Name | Summary |
+|---|---|
+| [closeSource](close-source.md) | Closes the underlying source of data used by this input. This method is invoked once the input is [closed](../../kotlinx.io/-input/close.md).`fun closeSource(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
+| [fill](fill.md) | `fun fill(buffer: `[`Buffer`](../../kotlinx.io.buffer/-buffer/index.md)`): `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
+
+### Extension Functions
+
+| Name | Summary |
+|---|---|
+| [copyTo](../../kotlinx.io/copy-to.md) | Copy input content to [destination](../../kotlinx.io/copy-to.md#kotlinx.io$copyTo(kotlinx.io.Input, kotlinx.io.Output)/destination).`fun `[`Input`](../../kotlinx.io/-input/index.md)`.copyTo(destination: `[`Output`](../../kotlinx.io/-output/index.md)`): `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
+| [forEachUtf8Line](../../kotlinx.io.text/for-each-utf8-line.md) | Iterates through each line of the input, calls [action](../../kotlinx.io.text/for-each-utf8-line.md#kotlinx.io.text$forEachUtf8Line(kotlinx.io.Input, kotlin.Function1((kotlin.String, kotlin.Unit)))/action) for each line read and closes the input when it is exhausted.`fun `[`Input`](../../kotlinx.io/-input/index.md)`.forEachUtf8Line(action: (`[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`) -> `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html)`): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
+| [readByteArray](../../kotlinx.io/read-byte-array.md) | Read [length](../../kotlinx.io/read-byte-array.md#kotlinx.io$readByteArray(kotlinx.io.Input, kotlin.ByteArray, kotlin.Int, kotlin.Int)/length) bytes from [Input](../../kotlinx.io/-input/index.md) to [array](../../kotlinx.io/read-byte-array.md#kotlinx.io$readByteArray(kotlinx.io.Input, kotlin.ByteArray, kotlin.Int, kotlin.Int)/array) from [startIndex](../../kotlinx.io/read-byte-array.md#kotlinx.io$readByteArray(kotlinx.io.Input, kotlin.ByteArray, kotlin.Int, kotlin.Int)/startIndex).`fun `[`Input`](../../kotlinx.io/-input/index.md)`.readByteArray(array: `[`ByteArray`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-byte-array/index.html)`, startIndex: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)` = 0, length: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)` = array.size - startIndex): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html)<br>`fun `[`Input`](../../kotlinx.io/-input/index.md)`.readByteArray(array: `[`UByteArray`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-u-byte-array/index.html)`, startIndex: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)` = 0, length: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)` = array.size - startIndex): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
+| [readDouble](../../kotlinx.io/read-double.md) | Reads a [Double](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html) from the current [Input](../../kotlinx.io/-input/index.md).`fun `[`Input`](../../kotlinx.io/-input/index.md)`.readDouble(): `[`Double`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html) |
+| [readFloat](../../kotlinx.io/read-float.md) | Reads a [Float](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html) from the current [Input](../../kotlinx.io/-input/index.md).`fun `[`Input`](../../kotlinx.io/-input/index.md)`.readFloat(): `[`Float`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html) |
+| [readUByte](../../kotlinx.io/read-u-byte.md) | Reads an [UByte](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-u-byte/index.html) from this Input.`fun `[`Input`](../../kotlinx.io/-input/index.md)`.readUByte(): `[`UByte`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-u-byte/index.html) |
+| [readUInt](../../kotlinx.io/read-u-int.md) | Reads an [UInt](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-u-int/index.html) from this Input.`fun `[`Input`](../../kotlinx.io/-input/index.md)`.readUInt(): `[`UInt`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-u-int/index.html) |
+| [readULong](../../kotlinx.io/read-u-long.md) | Reads a [ULong](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-u-long/index.html) from this Input.`fun `[`Input`](../../kotlinx.io/-input/index.md)`.readULong(): `[`ULong`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-u-long/index.html) |
+| [readUShort](../../kotlinx.io/read-u-short.md) | Reads an [UShort](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-u-short/index.html) from this Input.`fun `[`Input`](../../kotlinx.io/-input/index.md)`.readUShort(): `[`UShort`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-u-short/index.html) |
+| [readUtf8Line](../../kotlinx.io.text/read-utf8-line.md) | Reads the line in UTF-8 encoding from the input until the next line break or until the input is exhausted. A line break is either `"\n"` or `"\r\n"` and is not included in the result.`fun `[`Input`](../../kotlinx.io/-input/index.md)`.readUtf8Line(): `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html) |
+| [readUtf8Lines](../../kotlinx.io.text/read-utf8-lines.md) | Reads the whole input as a list of UTF-8 encoded lines separated by a line break and closes the input when it is exhausted. A line break is either `"\n"` or `"\r\n"` and is not included in resulting strings.`fun `[`Input`](../../kotlinx.io/-input/index.md)`.readUtf8Lines(): `[`List`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html)`<`[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`>` |
+| [readUtf8LineTo](../../kotlinx.io.text/read-utf8-line-to.md) | `fun `[`Input`](../../kotlinx.io/-input/index.md)`.readUtf8LineTo(out: `[`Appendable`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.text/-appendable/index.html)`): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
+| [readUtf8String](../../kotlinx.io.text/read-utf8-string.md) | `fun `[`Input`](../../kotlinx.io/-input/index.md)`.readUtf8String(length: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)`): `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html) |
+| [readUtf8StringTo](../../kotlinx.io.text/read-utf8-string-to.md) | `fun `[`Input`](../../kotlinx.io/-input/index.md)`.readUtf8StringTo(out: `[`Appendable`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.text/-appendable/index.html)`, length: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)`): `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
+| [readUtf8StringUntilDelimiter](../../kotlinx.io.text/read-utf8-string-until-delimiter.md) | `fun `[`Input`](../../kotlinx.io/-input/index.md)`.readUtf8StringUntilDelimiter(delimiter: `[`Char`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-char/index.html)`): `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html) |
+| [readUtf8StringUntilDelimiters](../../kotlinx.io.text/read-utf8-string-until-delimiters.md) | `fun `[`Input`](../../kotlinx.io/-input/index.md)`.readUtf8StringUntilDelimiters(delimiters: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`): `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html) |
+| [readUtf8StringUntilDelimitersTo](../../kotlinx.io.text/read-utf8-string-until-delimiters-to.md) | `fun `[`Input`](../../kotlinx.io/-input/index.md)`.readUtf8StringUntilDelimitersTo(stringBuilder: `[`Appendable`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.text/-appendable/index.html)`, delimiters: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`): `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
+| [readUtf8StringUntilDelimiterTo](../../kotlinx.io.text/read-utf8-string-until-delimiter-to.md) | `fun `[`Input`](../../kotlinx.io/-input/index.md)`.readUtf8StringUntilDelimiterTo(stringBuilder: `[`Appendable`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.text/-appendable/index.html)`, delimiter: `[`Char`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-char/index.html)`): `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
+| [use](../../kotlinx.io/use.md) | `fun <C : `[`Closeable`](../../kotlinx.io/-closeable/index.md)`, R> C.use(block: (C) -> R): R` |
