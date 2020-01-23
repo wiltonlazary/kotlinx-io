@@ -87,8 +87,8 @@ kotlin {
 benchmark {
     configurations {
         main {
-            iterations = 1000 // number of iterations
-            iterationTime = 1
+            iterations = 5 // number of iterations
+            iterationTime = 5
             iterationTimeUnit = "s"
         }
     }
