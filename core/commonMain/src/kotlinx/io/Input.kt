@@ -480,7 +480,7 @@ public abstract class Input : Closeable {
      * Instantiate [previewBytes] and fill it.
      */
     private fun startPreview(): Bytes {
-        val bytes = Bytes(bufferPool).apply {
+        val bytes = Bytes().apply {
             append(buffer, limit)
         }
 

@@ -2,6 +2,7 @@ package kotlinx.io.benchmarks
 
 import kotlinx.benchmark.*
 import kotlinx.io.*
+import kotlinx.io.bytes.*
 import kotlinx.io.text.*
 
 private val expected = "file content with unicode 🌀 : здороваться : 여보세요 : 你好 : ñç."
@@ -19,15 +20,20 @@ private val content = ubyteArrayOf(
 )
 // @formatter:on
 
-private val bytes = buildBytes {
-    writeByteArray(content)
-}
 
 @State(Scope.Benchmark)
 class TextDecodingBenchmark {
+    private lateinit var input: Input
+
+    @Setup
+    fun setup() {
+        input = buildInput {
+            writeByteArray(content)
+        }
+    }
+
     @Benchmark
     fun inputTextUntil(): String {
-        val input = bytes.input()
         val text = input.readUtf8StringUntilDelimiter('.')
 /*
         if (text != expected)
@@ -38,7 +44,6 @@ class TextDecodingBenchmark {
 
     @Benchmark
     fun inputText(): String {
-        val input = bytes.input()
         val text = input.readUtf8String(length)
 /*
         if (text != expected)
@@ -49,7 +54,6 @@ class TextDecodingBenchmark {
 
     @Benchmark
     fun inputTextShort(): String {
-        val input = bytes.input()
         val text = input.readUtf8String(25)
 /*
         if (text != expected)
