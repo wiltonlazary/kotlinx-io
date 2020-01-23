@@ -2,7 +2,9 @@
 
 package kotlinx.io.buffer
 
+import kotlinx.io.*
 import java.nio.*
+import java.nio.ByteOrder
 
 @Suppress("ACTUAL_WITHOUT_EXPECT")
 public actual inline class Buffer(val buffer: ByteBuffer) {
@@ -22,6 +24,7 @@ public actual inline class Buffer(val buffer: ByteBuffer) {
 /**
  * Wrap [array] into [Buffer] from [startIndex] to [endIndex].
  */
-internal actual fun bufferOf(array: ByteArray, startIndex: Int, endIndex: Int): Buffer {
+@ExperimentalIoApi
+public actual fun bufferOf(array: ByteArray, startIndex: Int, endIndex: Int): Buffer {
     return Buffer(ByteBuffer.wrap(array, startIndex, endIndex - startIndex))
 }

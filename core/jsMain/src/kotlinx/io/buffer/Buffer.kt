@@ -25,7 +25,8 @@ public actual class Buffer(public val view: DataView) {
 /**
  * Wrap [array] into [Buffer] from [startIndex] to [endIndex].
  */
-internal actual fun bufferOf(array: ByteArray, startIndex: Int, endIndex: Int): Buffer {
+@ExperimentalIoApi
+public actual fun bufferOf(array: ByteArray, startIndex: Int, endIndex: Int): Buffer {
     val content = array as Int8Array
     val view = DataView(
         content.buffer, content.byteOffset + startIndex, endIndex - startIndex

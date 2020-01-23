@@ -39,5 +39,6 @@ public inline fun <R> Buffer.usePointer(block: (pointer: CPointer<ByteVar>) -> R
 /**
  * Wrap [array] into [Buffer] from [startIndex] to [endIndex].
  */
-internal actual fun bufferOf(array: ByteArray, startIndex: Int, endIndex: Int): Buffer =
+@ExperimentalIoApi
+public actual fun bufferOf(array: ByteArray, startIndex: Int, endIndex: Int): Buffer =
     Buffer(array, startIndex, endIndex - startIndex)
