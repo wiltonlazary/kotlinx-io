@@ -100,7 +100,6 @@ public fun Input.readByteArray(): ByteArray {
  */
 public fun Input.readByteArray(array: ByteArray, startIndex: Int = 0, length: Int = array.size - startIndex) {
     checkArrayStartAndLength(array, startIndex, length)
-
     var remaining = length
     var consumed = 0
     while (remaining > 0) {
