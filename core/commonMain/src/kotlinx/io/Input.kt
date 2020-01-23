@@ -1,6 +1,8 @@
 package kotlinx.io
 
 import kotlinx.io.buffer.*
+import kotlinx.io.bytes.*
+import kotlinx.io.bytes.Bytes
 import kotlinx.io.pool.*
 import kotlin.math.*
 
