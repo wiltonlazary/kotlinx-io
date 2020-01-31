@@ -4,6 +4,30 @@ import kotlinx.io.buffer.*
 import kotlin.math.*
 
 /**
+ * Call [block] for each byte in [Input], until predicate returns false.
+ *
+ * Each byte will be consumed from input.
+ */
+public inline fun Input.readUntil(block: (Byte) -> Boolean): Int {
+    var count = 0
+    var done = false
+    while (!done) {
+        count += readBufferRange { buffer, startOffset, endOffset ->
+            for (index in startOffset until endOffset) {
+                if (!block(buffer[index])) {
+                    done = true
+                    return@readBufferRange index - startOffset + 1
+                }
+            }
+
+            return@readBufferRange endOffset - startOffset
+        }
+    }
+
+    return count
+}
+
+/**
  * Copy [Input] content to [destination].
  *
  * The [Input] wouldn't be closed at the end.

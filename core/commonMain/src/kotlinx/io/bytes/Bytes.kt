@@ -54,7 +54,7 @@ internal class Bytes {
     }
 
     fun discardFirst() {
-        check (head != tail) { "Bytes is empty." }
+        check(head != tail) { "Bytes is empty." }
 
         buffers[head] = null
         limits[head] = -1
@@ -108,6 +108,7 @@ internal class Bytes {
         private const val INITIAL_PREVIEW_SIZE = 1
     }
 }
+
 /**
  * Get [Buffer] and limit according to [pointer] offset in [Bytes.buffers].
  */

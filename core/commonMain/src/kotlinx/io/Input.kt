@@ -3,6 +3,7 @@ package kotlinx.io
 import kotlinx.io.buffer.*
 import kotlinx.io.bytes.*
 import kotlinx.io.bytes.Bytes
+import kotlinx.io.pointed
 import kotlinx.io.pool.*
 import kotlin.math.*
 
@@ -54,17 +55,19 @@ public abstract class Input : Closeable {
      * Buffer for current operations.
      * Note, that buffer can be exhausted (position == limit).
      */
-    private var buffer: Buffer
+    internal var buffer: Buffer
 
     /**
      * Current reading position in the [buffer].
      */
-    private var position: Int = 0
+    @PublishedApi
+    internal var position: Int = 0
 
     /**
      * Number of bytes loaded into the [buffer].
      */
-    private var limit: Int = 0
+    @PublishedApi
+    internal var limit: Int = 0
 
     /**
      * Index of a current buffer in the [previewBytes].
@@ -141,7 +144,8 @@ public abstract class Input : Closeable {
 
             return readBufferRange { buffer, startOffset, endOffset ->
                 destination.writeBuffer(buffer, startOffset, endOffset)
-                endOffset
+                // TODO: buffer released
+                endOffset - startOffset
             }
         }
 
@@ -279,10 +283,7 @@ public abstract class Input : Closeable {
         var remaining = count
         while (remaining > 0) {
             val skipCount = readBufferRange { _, startOffset, endOffset ->
-                val skipCount = min(remaining, endOffset - startOffset)
-
-
-                startOffset + skipCount
+                min(remaining, endOffset - startOffset)
             }
 
             if (skipCount == 0) {
@@ -412,7 +413,7 @@ public abstract class Input : Closeable {
     }
 
     /**
-     * Allows direct read from a buffer, operates on startOffset + endOffset (exclusive), returns new position.
+     * Allows direct read from a buffer, operates on startOffset + endOffset (exclusive), returns consumed bytes count.
      * NOTE: Dangerous to use, if non-local return then position will not be updated.
      *
      * @return consumed bytes count
@@ -422,10 +423,9 @@ public abstract class Input : Closeable {
             return 0
         }
 
-        val newPosition = reader(buffer, position, limit)
-        val result = newPosition - position
-        position = newPosition
-        return result
+        val consumed = reader(buffer, position, limit)
+        position += consumed
+        return consumed
     }
 
     /**

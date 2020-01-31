@@ -1,7 +1,7 @@
 plugins {
     id "kotlin-multiplatform"
     id "maven-publish"
-    id "kotlinx-atomicfu"
+//    id "kotlinx-atomicfu"
     id "jacoco"
 }
 

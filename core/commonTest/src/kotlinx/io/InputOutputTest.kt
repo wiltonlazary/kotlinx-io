@@ -272,6 +272,7 @@ class InputOutputTest {
         assertArrayEquals(ByteArray(4097), input.readByteArray())
     }
 
+    @Test
     fun testInputCopyTo() {
         val content = ByteArray(1024) { it.toByte() }
         val input = ByteArrayInput(content)
@@ -297,6 +298,27 @@ class InputOutputTest {
         assertEquals(size, count)
 
         assertArrayEquals(content.sliceArray(0 until size), output.toByteArray())
+    }
+
+    @Test
+    fun testReadUntilNotConsume() {
+        var count = 0
+        val input = LambdaInput { buffer, startIndex, endIndex ->
+            when (count++) {
+                0 -> {
+                    buffer.storeByteAt(startIndex, 'a'.toByte())
+                    1
+                }
+                1 -> {
+                    buffer.storeByteAt(startIndex, 'b'.toByte())
+                    1
+                }
+                else -> 0
+            }
+        }
+
+        assertEquals(1, input.readUntil { it != 'a'.toByte() })
+        assertEquals('b'.toByte(), input.readByte())
     }
 
     private fun checkException(block: () -> Unit) {
