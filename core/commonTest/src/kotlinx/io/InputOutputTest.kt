@@ -294,8 +294,8 @@ class InputOutputTest {
 
         val count = input.copyTo(output, size)
 
-        assertTrue(!input.eof())
         assertEquals(size, count)
+        assertTrue(!input.eof())
 
         assertArrayEquals(content.sliceArray(0 until size), output.toByteArray())
     }

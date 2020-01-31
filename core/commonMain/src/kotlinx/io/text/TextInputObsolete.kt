@@ -117,7 +117,7 @@ private fun Input.decodeUtf8Chars(consumer: (Char) -> Boolean): Int {
                             malformedInput(value)
                         if (!consumer(byte.toChar())) {
                             state = STATE_FINISH
-                            return@readBufferRange offset + 1
+                            return@readBufferRange offset + 1 - startOffset
                         }
                         count++
                     }
@@ -127,7 +127,7 @@ private fun Input.decodeUtf8Chars(consumer: (Char) -> Boolean): Int {
                             byte < 0x80 -> {
                                 if (!consumer(byte.toChar())) {
                                     state = STATE_FINISH
-                                    return@readBufferRange offset + 1
+                                    return@readBufferRange offset + 1 - startOffset
                                 }
                                 count++
                             }
@@ -188,7 +188,7 @@ private fun Input.decodeUtf8Chars(consumer: (Char) -> Boolean): Int {
                             }
                             if (!more) {
                                 state = STATE_FINISH
-                                return@readBufferRange offset + 1
+                                return@readBufferRange offset + 1 - startOffset
                             }
 
                             value = 0
@@ -196,7 +196,7 @@ private fun Input.decodeUtf8Chars(consumer: (Char) -> Boolean): Int {
                     }
                 }
             }
-            endOffset
+            endOffset - startOffset
         }
     }
     return count

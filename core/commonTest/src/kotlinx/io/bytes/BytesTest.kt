@@ -150,8 +150,11 @@ class BytesTest {
             writeByteArray(ByteArray(99999))
             writeByteArray("ABC123\n".toByteArray0())
         }.apply {
+            assertEquals(99999 + 7, remaining)
             readByteArray(ByteArray(99999 + 3))
+            assertEquals(4, remaining)
             assertEquals("123", readUtf8Line())
+            assertEquals(0, remaining)
             assertTrue { eof() }
         }
     }

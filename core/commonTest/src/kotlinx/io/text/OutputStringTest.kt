@@ -2,7 +2,6 @@ package kotlinx.io.text
 
 import kotlinx.io.*
 import kotlinx.io.bytes.*
-import kotlinx.io.text.*
 import kotlin.test.*
 
 open class OutputStringTest {
@@ -138,14 +137,18 @@ open class OutputStringTest {
             writeUtf8String("\u0422,\u0423|\u0424.")
         }
 
-        val sb = StringBuilder()
+        assertEquals(9, input.remaining)
+        val builder = StringBuilder()
         val counts = mutableListOf<Int>()
 
-        counts.add(input.readUtf8StringUntilDelimitersTo(sb, "|,."))
-        counts.add(input.readUtf8StringUntilDelimitersTo(sb, "|,."))
-        counts.add(input.readUtf8StringUntilDelimitersTo(sb, "|,."))
+        counts.add(input.readUtf8StringUntilDelimitersTo(builder, "|,."))
+        assertEquals(6, input.remaining)
+        counts.add(input.readUtf8StringUntilDelimitersTo(builder, "|,."))
+        assertEquals(3, input.remaining)
+        counts.add(input.readUtf8StringUntilDelimitersTo(builder, "|,."))
+        assertEquals(0, input.remaining)
+        assertEquals("\u0422\u0423\u0424", builder.toString())
         assertTrue(input.eof(), "EOF")
-        assertEquals("\u0422\u0423\u0424", sb.toString())
         assertEquals(listOf(1, 1, 1), counts)
     }
 
