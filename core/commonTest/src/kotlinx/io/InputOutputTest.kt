@@ -169,20 +169,20 @@ class InputOutputTest {
     fun testCustomPools() {
         val inputBuffer = bufferOf(ByteArray(10))
         val inputPool = SingleShotPool(inputBuffer)
+        val outputBuffer = bufferOf(ByteArray(10))
+        val outputPool = SingleShotPool(outputBuffer)
 
         val input = object : Input(inputPool) {
             override fun closeSource() {
             }
 
             override fun fill(buffer: Buffer, startIndex: Int, endIndex: Int): Int {
-                assertTrue { inputBuffer === buffer }
+                assertTrue { outputBuffer === buffer }
                 buffer.storeByteAt(startIndex, 42)
                 return 1
             }
         }
 
-        val outputBuffer = bufferOf(ByteArray(10))
-        val outputPool = SingleShotPool(outputBuffer)
 
         val output = object : Output(outputPool) {
             override fun flush(source: Buffer, startIndex: Int, endIndex: Int) {
