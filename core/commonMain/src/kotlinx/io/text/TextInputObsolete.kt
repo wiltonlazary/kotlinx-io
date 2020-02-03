@@ -101,14 +101,14 @@ public fun Input.readUtf8StringUntilDelimiters(delimiters: String): String = bui
  *
  * @throws MalformedInputException if decoder fail to recognize charset.
  */
-private fun Input.decodeUtf8Chars(consumer: (Char) -> Boolean): Int {
+fun Input.decodeUtf8Chars(consumer: (Char) -> Boolean): Int {
     var byteCount = 0
     var value = 0
     var state = STATE_UTF_8
     var count = 0
 
     while (state != STATE_FINISH && !eof()) {
-        readBufferRange { buffer, startOffset, endOffset ->
+        count += readBufferRange { buffer, startOffset, endOffset ->
             for (offset in startOffset until endOffset) {
                 val byte = buffer.loadByteAt(offset).toInt() and 0xff
                 when {
@@ -119,7 +119,6 @@ private fun Input.decodeUtf8Chars(consumer: (Char) -> Boolean): Int {
                             state = STATE_FINISH
                             return@readBufferRange offset + 1 - startOffset
                         }
-                        count++
                     }
                     byteCount == 0 -> {
                         // first unicode byte
@@ -129,7 +128,6 @@ private fun Input.decodeUtf8Chars(consumer: (Char) -> Boolean): Int {
                                     state = STATE_FINISH
                                     return@readBufferRange offset + 1 - startOffset
                                 }
-                                count++
                             }
                             byte < 0xC0 -> {
                                 byteCount = 0
@@ -205,20 +203,28 @@ private fun Input.decodeUtf8Chars(consumer: (Char) -> Boolean): Int {
 /**
  * Inline depth optimisation
  */
-private fun malformedInput(codePoint: Int): Nothing {
+@PublishedApi
+internal fun malformedInput(codePoint: Int): Nothing {
     throw MalformedInputException("Malformed Utf8 input, current code point $codePoint")
 }
 
 @Suppress("NOTHING_TO_INLINE")
-private inline fun lowSurrogate(codePoint: Int): Int = (codePoint and 0x3ff) + MinLowSurrogate
+@PublishedApi
+internal inline fun lowSurrogate(codePoint: Int): Int = (codePoint and 0x3ff) + MinLowSurrogate
 
 @Suppress("NOTHING_TO_INLINE")
-private inline fun highSurrogate(codePoint: Int): Int = (codePoint ushr 10) + HighSurrogateMagic
+@PublishedApi
+internal inline fun highSurrogate(codePoint: Int): Int = (codePoint ushr 10) + HighSurrogateMagic
 
-private const val MaxCodePoint = 0x10ffff
+@PublishedApi
+internal const val MaxCodePoint = 0x10ffff
+
+@PublishedApi
 internal const val MinLowSurrogate = 0xdc00
 private const val MinHighSurrogate = 0xd800
 private const val MinSupplementary = 0x10000
+
+@PublishedApi
 internal const val HighSurrogateMagic = MinHighSurrogate - (MinSupplementary ushr 10)
 
 // Alternative implementation, slower x1.5
@@ -241,7 +247,8 @@ private val Utf8StateMachine = intArrayOf(
     12, 0, 12, 12, 12, 12, 12, 0, 12, 0, 12, 12, 12, 24, 12, 12, 12, 12, 12, 24, 12, 24, 12, 12,
     12, 12, 12, 12, 12, 12, 12, 24, 12, 12, 12, 12, 12, 24, 12, 12, 12, 12, 12, 12, 12, 24, 12, 12,
     12, 12, 12, 12, 12, 12, 12, 36, 12, 36, 12, 12, 12, 36, 12, 12, 12, 12, 12, 36, 12, 36, 12, 12,
-    12, 36, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12
+    12, 36, 12, 12, 12, 12, 12, 12, 12, 12, 12,
+    12
 
 /*
     // filler to 512, unused
@@ -253,12 +260,15 @@ private val Utf8StateMachine = intArrayOf(
 */
 )
 
+@PublishedApi
 internal const val STATE_FINISH = -2
+
 //private const val Utf8_STATE_ASCII = -1
+@PublishedApi
 internal const val STATE_UTF_8 = 0
 internal const val STATE_REJECT = 1
 
-private fun Input.decodeUtf8(consumer: (Int) -> Boolean) {
+fun Input.decodeUtf8(consumer: (Int) -> Boolean) {
     val stateMachine = Utf8StateMachine
     var state = STATE_UTF_8
     var codePoint = 0
@@ -298,7 +308,7 @@ private fun Input.decodeUtf8(consumer: (Int) -> Boolean) {
     }
 }
 
-private fun Input.decodeUtf8CharsAlt(consumer: (Char) -> Boolean) {
+fun Input.decodeUtf8CharsAlt(consumer: (Char) -> Boolean) {
     decodeUtf8 { codePoint ->
         when {
             codePoint ushr 16 == 0 -> consumer(codePoint.toChar())

@@ -8,7 +8,7 @@ import kotlin.math.*
  *
  * Each byte will be consumed from input.
  */
-public inline fun Input.readUntil(block: (Byte) -> Boolean): Int {
+public inline fun Input.readUntil(crossinline block: (Byte) -> Boolean): Int {
     var count = 0
     var done = false
     while (!done) {
@@ -17,6 +17,25 @@ public inline fun Input.readUntil(block: (Byte) -> Boolean): Int {
                 if (!block(buffer[index])) {
                     done = true
                     return@readBufferRange index - startOffset + 1
+                }
+            }
+
+            return@readBufferRange endOffset - startOffset
+        }
+    }
+
+    return count
+}
+
+public inline fun Input.readUntilExclusive(crossinline block: (Byte) -> Boolean): Int {
+    var count = 0
+    var done = false
+    while (!done) {
+        count += readBufferRange { buffer, startOffset, endOffset ->
+            for (index in startOffset until endOffset) {
+                if (!block(buffer[index])) {
+                    done = true
+                    return@readBufferRange index - startOffset
                 }
             }
 

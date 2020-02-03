@@ -1,4 +1,6 @@
-apply plugin: 'kotlin-multiplatform'
+plugins {
+    id 'kotlin-multiplatform'
+}
 
 kotlin {
     jvm()
@@ -10,12 +12,31 @@ kotlin {
             progressiveMode = true
         }
     }
+
+    sourceSets {
+        commonMain.dependencies {
+            api "org.jetbrains.kotlin:kotlin-stdlib"
+            api project(":kotlinx-io")
+        }
+
+
+        jvmMain.dependencies {
+            api "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+            api "com.squareup.okio:okio:1.0.0"
+        }
+
+        commonTest {
+            dependencies {
+                api "org.jetbrains.kotlin:kotlin-test-common"
+                api "org.jetbrains.kotlin:kotlin-test-annotations-common"
+            }
+        }
+
+
+        jvmTest {
+            dependencies {
+                api "org.jetbrains.kotlin:kotlin-test-junit"
+            }
+        }
+    }
 }
-
-kotlin.sourceSets.jvmMain.dependencies {
-    api "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-    api project(":kotlinx-io")
-    api "com.squareup.okio:okio:1.0.0"
-
-}
-
