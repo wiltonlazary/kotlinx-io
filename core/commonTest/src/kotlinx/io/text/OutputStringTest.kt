@@ -4,7 +4,7 @@ import kotlinx.io.*
 import kotlinx.io.bytes.*
 import kotlin.test.*
 
-open class OutputStringTest {
+class OutputStringTest {
     private val bufferSizes = (1..64)
 
     @Test
@@ -128,7 +128,7 @@ open class OutputStringTest {
         counts.add(input.readUtf8StringUntilDelimitersTo(sb, "|,."))
         assertTrue(input.eof(), "EOF")
         assertEquals("1234", sb.toString())
-        assertEquals(listOf(1, 2, 0, 1), counts)
+        assertEquals(listOf(2, 3, 1, 2), counts)
     }
 
     @Test
@@ -149,7 +149,7 @@ open class OutputStringTest {
         assertEquals(0, input.remaining)
         assertEquals("\u0422\u0423\u0424", builder.toString())
         assertTrue(input.eof(), "EOF")
-        assertEquals(listOf(1, 1, 1), counts)
+        assertEquals(listOf(3, 3, 3), counts)
     }
 
     @Test
@@ -163,6 +163,26 @@ open class OutputStringTest {
         assertEquals("333", input.readUtf8Line())
         assertEquals("4444", input.readUtf8Line())
         assertTrue(input.eof(), "EOF")
+    }
+
+    @Test
+    fun testWriteSingleUnicode() {
+        val text = """🤔"""
+        val input = buildInput {
+            writeUtf8String(text, 0, text.length)
+        }
+
+        assertEquals(text, input.readUtf8String())
+    }
+
+    @Test
+    fun testParseGlyph() {
+        val text = """􏿿"""
+        val input = buildInput {
+            writeUtf8String(text, 0, text.length)
+        }
+
+        assertEquals(text, input.readUtf8String())
     }
 }
 

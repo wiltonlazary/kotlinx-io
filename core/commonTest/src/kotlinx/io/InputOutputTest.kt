@@ -321,6 +321,12 @@ class InputOutputTest {
         assertEquals('b'.toByte(), input.readByte())
     }
 
+    @Test
+    fun testReadUntilEof() {
+        val input = LambdaInput { _, _, _ -> 0 }
+        input.readUntil { true }
+    }
+
     private fun checkException(block: () -> Unit) {
         var fail = false
         try {

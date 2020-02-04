@@ -57,6 +57,9 @@ kotlin {
         jvmMain {
             dependencies {
                 implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
+                api("com.google.code.gson:gson:$gson_version")
+                api("com.fasterxml.jackson.core:jackson-databind:$jackson_version")
+                api("com.fasterxml.jackson.module:jackson-module-kotlin:$jackson_kotlin_version")
             }
         }
         jvmTest {
@@ -87,8 +90,8 @@ kotlin {
 benchmark {
     configurations {
         main {
-            iterations = 5 // number of iterations
-            iterationTime = 5
+            iterations = 10 // number of iterations
+            iterationTime = 1
             iterationTimeUnit = "s"
         }
     }

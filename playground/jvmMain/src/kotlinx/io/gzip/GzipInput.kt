@@ -1,6 +1,7 @@
 package kotlinx.io.gzip
 
 import kotlinx.io.*
+import kotlinx.io.InputStream
 import kotlinx.io.buffer.*
 import java.io.*
 import java.util.zip.*

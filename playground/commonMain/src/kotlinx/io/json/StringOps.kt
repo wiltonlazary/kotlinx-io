@@ -4,9 +4,9 @@
 
 package kotlinx.io.json
 
-import kotlin.native.concurrent.SharedImmutable
+import kotlin.native.concurrent.*
 
-private fun toHexChar(i: Int) : Char {
+internal fun toHexChar(i: Int): Char {
     val d = i and 0xf
     return if (d < 10) (d + '0'.toInt()).toChar()
     else (d - 10 + 'a'.toInt()).toChar()
@@ -16,8 +16,8 @@ private fun toHexChar(i: Int) : Char {
  * Even though the actual size of this array is 92, it has to be the power of two, otherwise
  * JVM cannot perform advanced range-check elimination and vectorization in printQuoted
  */
-@SharedImmutable
-private val ESCAPE_CHARS: Array<String?> = arrayOfNulls<String>(128).apply {
+@ThreadLocal
+internal val ESCAPE_CHARS: Array<String?> = arrayOfNulls<String>(128).apply {
     for (c in 0..0x1f) {
         val c1 = toHexChar(c shr 12)
         val c2 = toHexChar(c shr 8)
@@ -34,29 +34,12 @@ private val ESCAPE_CHARS: Array<String?> = arrayOfNulls<String>(128).apply {
     this[0x0c] = "\\f"
 }
 
-internal fun StringBuilder.printQuoted(value: String) {
-    append(STRING)
-    var lastPos = 0
-    val length = value.length
-    for (i in 0 until length) {
-        val c = value[i].toInt()
-        // Do not replace this constant with C2ESC_MAX (which is smaller than ESCAPE_CHARS size),
-        // otherwise JIT won't eliminate range check and won't vectorize this loop
-        if (c >= ESCAPE_CHARS.size) continue // no need to escape
-        val esc = ESCAPE_CHARS[c] ?: continue
-        append(value, lastPos, i) // flush prev
-        append(esc)
-        lastPos = i + 1
-    }
-    append(value, lastPos, length)
-    append(STRING)
-}
-
 /**
  * Returns `true` if the contents of this string is equal to the word "true", ignoring case, `false` if content equals "false",
  * and throws [IllegalStateException] otherwise.
  */
-internal fun String.toBooleanStrict(): Boolean = toBooleanStrictOrNull() ?: throw IllegalStateException("$this does not represent a Boolean")
+internal fun String.toBooleanStrict(): Boolean =
+    toBooleanStrictOrNull() ?: throw IllegalStateException("$this does not represent a Boolean")
 
 /**
  * Returns `true` if the contents of this string is equal to the word "true", ignoring case, `false` if content equals "false",

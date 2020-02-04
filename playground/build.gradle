@@ -1,5 +1,7 @@
 plugins {
     id 'kotlin-multiplatform'
+    id 'kotlinx-serialization'
+    id 'jacoco'
 }
 
 kotlin {
@@ -17,12 +19,13 @@ kotlin {
         commonMain.dependencies {
             api "org.jetbrains.kotlin:kotlin-stdlib"
             api project(":kotlinx-io")
+            api("org.jetbrains.kotlinx:kotlinx-serialization-runtime-common:$serialization_version")
         }
-
 
         jvmMain.dependencies {
             api "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
             api "com.squareup.okio:okio:1.0.0"
+            api("org.jetbrains.kotlinx:kotlinx-serialization-runtime:$serialization_version")
         }
 
         commonTest {
@@ -32,11 +35,38 @@ kotlin {
             }
         }
 
-
         jvmTest {
             dependencies {
                 api "org.jetbrains.kotlin:kotlin-test-junit"
             }
         }
+    }
+}
+
+jacoco {
+    toolVersion = "0.8.5"
+    reportsDir = file("${buildDir}/jacoco-reports")
+}
+
+task testCoverage(type: JacocoReport, dependsOn: jvmTest) {
+    group = "Reporting"
+    description = "Generate Jacoco coverage reports."
+
+    def coverageSourceDirs = [
+            "commonMain/src",
+            "jvmMain/src"
+    ]
+
+    classDirectories.from files(fileTree(dir: "${buildDir}/classes/kotlin/jvm/"))
+    sourceDirectories.from files(coverageSourceDirs)
+    additionalSourceDirs.from files(coverageSourceDirs)
+    executionData.from files("${buildDir}/jacoco/jvmTest.exec")
+
+    reports {
+        xml.enabled false
+        csv.enabled false
+        html.enabled true
+
+        html.destination file("${buildDir}/jacoco-reports/html")
     }
 }

@@ -1,31 +1,30 @@
 package kotlinx.io.json
 
-import kotlin.jvm.*
+import kotlinx.serialization.*
+import kotlinx.serialization.json.JsonDecodingException
+import kotlinx.serialization.json.JsonEncodingException
 
-/**
- * A generic exception indicating the problem during serialization or deserialization process
- */
-public open class SerializationException @JvmOverloads constructor(
-    message: String, cause: Throwable? = null
-) : RuntimeException(message, cause)
 
-/**
- * Generic exception indicating a problem with JSON operations.
- */
-public open class JsonException(message: String) : SerializationException(message)
+fun ioInvalidFloatingPoint(value: Number, type: String) = JsonEncodingException(
+    "$value is not a valid $type as per JSON specification. " +
+            "You can disable strict mode to serialize such values"
+)
 
-/**
- * Exception thrown when [Json] has failed to parse provided JSON or deserialize it to a given model.
- *
- * Such exception usually indicate that [Json] input is not a valid JSON.
- */
-public class JsonDecodingException(
-    position: Int, message: String
-) : JsonException("Invalid JSON at $position: $message")
 
-/**
- * Exception thrown when [Json] has failed to create JSON string or encode particular value
- *
- * Such exception usually indicates that input data can't be represented as a valid JSON
- */
-public class JsonEncodingException(message: String) : JsonException(message)
+fun ioInvalidFloatingPoint(value: Number, key: String, type: String) = JsonEncodingException(
+    "$value with key $key is not a valid $type as per JSON specification. " +
+            "You can disable strict mode to serialize such values"
+)
+
+fun ioJsonUnknownKeyException(position: Int, key: String) = JsonDecodingException(
+    position,
+    "Strict JSON encountered unknown key: $key\n" +
+            "You can disable strict mode to skip unknown keys"
+)
+
+
+fun ioJsonMapInvalidKeyKind(keyDescriptor: SerialDescriptor) = kotlinx.serialization.json.JsonException(
+    "Value of type ${keyDescriptor.name} can't be used in json as map key. " +
+            "It should have either primitive or enum kind, but its kind is ${keyDescriptor.kind}.\n" +
+            "You can convert such maps to arrays [key1, value1, key2, value2,...] with 'allowStructuredMapKeys' flag in JsonConfiguration."
+)

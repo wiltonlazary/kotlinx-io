@@ -12,7 +12,7 @@ public inline fun Input.readUntil(crossinline block: (Byte) -> Boolean): Int {
     var count = 0
     var done = false
     while (!done) {
-        count += readBufferRange { buffer, startOffset, endOffset ->
+        val consumed = readBufferRange { buffer, startOffset, endOffset ->
             for (index in startOffset until endOffset) {
                 if (!block(buffer[index])) {
                     done = true
@@ -22,6 +22,12 @@ public inline fun Input.readUntil(crossinline block: (Byte) -> Boolean): Int {
 
             return@readBufferRange endOffset - startOffset
         }
+
+        if (consumed == 0) {
+            break
+        }
+
+        count += consumed
     }
 
     return count
@@ -31,7 +37,7 @@ public inline fun Input.readUntilExclusive(crossinline block: (Byte) -> Boolean)
     var count = 0
     var done = false
     while (!done) {
-        count += readBufferRange { buffer, startOffset, endOffset ->
+        val consumed = readBufferRange { buffer, startOffset, endOffset ->
             for (index in startOffset until endOffset) {
                 if (!block(buffer[index])) {
                     done = true
@@ -41,6 +47,12 @@ public inline fun Input.readUntilExclusive(crossinline block: (Byte) -> Boolean)
 
             return@readBufferRange endOffset - startOffset
         }
+
+        if (consumed == 0) {
+            break
+        }
+
+        count += consumed
     }
 
     return count

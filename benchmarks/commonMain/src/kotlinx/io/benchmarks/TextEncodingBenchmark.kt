@@ -15,7 +15,7 @@ class TextEncodingBenchmark {
         }
         return p.remaining
     }
-    
+
     @Benchmark
     fun outputTextShort(): Int {
         val p = buildInput {

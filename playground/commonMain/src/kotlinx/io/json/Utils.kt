@@ -1,6 +1,7 @@
 package kotlinx.io.json
 
 import kotlinx.io.json.EscapeCharMappings.ESCAPE_2_CHAR
+import kotlinx.serialization.json.*
 import kotlin.jvm.*
 import kotlin.native.concurrent.*
 
@@ -38,6 +39,8 @@ internal const val TC_END_LIST: Byte = 9
 internal const val TC_NULL: Byte = 10
 internal const val TC_INVALID: Byte = 11
 internal const val TOKEN_EOF: Byte = 12
+
+internal const val PRIMITIVE_TAG = "primitive" // also used in JsonPrimitiveInput
 
 // mapping from chars to token classes
 internal const val CTC_MAX = 0x7e
@@ -89,7 +92,8 @@ internal object EscapeCharMappings {
         if (esc != UNICODE_ESC) ESCAPE_2_CHAR[esc.toInt()] = c.toChar()
     }
 
-    internal fun initC2ESC(c: Char, esc: Char) = initC2ESC(c.toInt(), esc)
+    internal fun initC2ESC(c: Char, esc: Char) =
+        initC2ESC(c.toInt(), esc)
 }
 
 internal fun ByteArray.initC2TC(c: Int, cl: Byte) {
@@ -100,10 +104,13 @@ internal fun ByteArray.initC2TC(c: Char, cl: Byte) {
     initC2TC(c.toInt(), cl)
 }
 
-internal fun charToTokenClass(char: Byte): Byte = if (char.toInt() < CTC_MAX) C2TC[char.toInt()] else TC_OTHER
-internal fun charToTokenClass(char: Char): Byte = if (char.toInt() < CTC_MAX) C2TC[char.toInt()] else TC_OTHER
+internal fun charToTokenClass(char: Byte): Byte = if (char.toInt() < CTC_MAX
+) C2TC[char.toInt()] else TC_OTHER
+internal fun charToTokenClass(char: Char): Byte = if (char.toInt() < CTC_MAX
+) C2TC[char.toInt()] else TC_OTHER
 
-internal fun escapeToChar(c: Int): Char = if (c < ESC2C_MAX) ESCAPE_2_CHAR[c] else INVALID
+internal fun escapeToChar(c: Int): Char = if (c < ESC2C_MAX
+) ESCAPE_2_CHAR[c] else INVALID
 
 internal fun rangeEquals(source: String, start: Int, length: Int, str: String): Boolean {
     val n = str.length
@@ -111,3 +118,10 @@ internal fun rangeEquals(source: String, start: Int, length: Int, str: String): 
     for (i in 0 until n) if (source[start + i] != str[i]) return false
     return true
 }
+
+@Suppress("USELESS_CAST") // Contracts does not work in K/N
+internal inline fun <reified T : JsonElement> cast(obj: JsonElement): T {
+    check(obj is T) { "Expected ${T::class} but found ${obj::class}" }
+    return obj as T
+}
+
