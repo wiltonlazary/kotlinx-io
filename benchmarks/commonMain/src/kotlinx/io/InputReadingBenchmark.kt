@@ -1,7 +1,6 @@
-package kotlinx.io.benchmarks
+package kotlinx.io
 
 import kotlinx.benchmark.*
-import kotlinx.io.*
 import kotlinx.io.buffer.*
 
 @State(Scope.Benchmark)

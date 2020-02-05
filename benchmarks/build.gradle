@@ -1,6 +1,7 @@
 apply plugin: 'kotlin-multiplatform'
 apply plugin: 'kotlin-allopen'
 apply plugin: 'kotlinx.benchmark'
+apply plugin: 'kotlinx-serialization'
 
 // how to apply plugin to a specific source set?
 allOpen {
@@ -46,6 +47,7 @@ kotlin {
                 implementation 'org.jetbrains.kotlin:kotlin-stdlib-common'
                 implementation "org.jetbrains.kotlinx:kotlinx.benchmark.runtime:$benchmarks_version"
                 implementation project(":kotlinx-io")
+                implementation project(":kotlinx-io-playground")
             }
         }
         commonTest {

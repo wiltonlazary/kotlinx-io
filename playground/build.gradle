@@ -4,8 +4,30 @@ plugins {
     id 'jacoco'
 }
 
+def ideaActive = System.getProperty('idea.active') == 'true'
+
 kotlin {
     jvm()
+
+    if (!ideaActive) {
+        linuxX64()
+        mingwX64()
+        macosX64()
+        iosX64()
+        iosArm64()
+        iosArm32()
+    } else {
+        macosX64("native")
+    }
+
+    js {
+        nodejs {
+            testTask {
+                debug = false
+            }
+        }
+        browser()
+    }
 
     sourceSets.all {
         kotlin.srcDirs = ["$it.name/src"]

@@ -1,4 +1,4 @@
-package kotlinx.io.benchmarks
+package kotlinx.io
 
 import kotlinx.benchmark.*
 import kotlinx.io.bytes.*
