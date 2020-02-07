@@ -44,10 +44,10 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                implementation 'org.jetbrains.kotlin:kotlin-stdlib-common'
-                implementation "org.jetbrains.kotlinx:kotlinx.benchmark.runtime:$benchmarks_version"
                 implementation project(":kotlinx-io")
                 implementation project(":kotlinx-io-playground")
+                implementation 'org.jetbrains.kotlin:kotlin-stdlib-common'
+                implementation "org.jetbrains.kotlinx:kotlinx.benchmark.runtime:$benchmarks_version"
             }
         }
         commonTest {
@@ -88,13 +88,20 @@ kotlin {
     }
 }
 
+
 // Configure benchmark
 benchmark {
     configurations {
         main {
             iterations = 10 // number of iterations
-            iterationTime = 1
-            iterationTimeUnit = "s"
+            iterationTime = 1000
+
+            iterationTimeUnit = "ms"
+
+            if (project.hasProperty("benchmarkName")) {
+                def benchmarkName = project.getProperty("benchmarkName")
+                include(benchmarkName)
+            }
         }
     }
 

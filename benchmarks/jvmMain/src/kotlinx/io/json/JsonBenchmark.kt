@@ -1,21 +1,22 @@
-package json.kotlinx.io.json
+package kotlinx.io.json
 
 import kotlinx.benchmark.*
 import kotlinx.io.*
-import kotlinx.io.json.*
 import kotlinx.io.json.data.*
+import kotlinx.io.json.utils.*
 import kotlinx.serialization.*
 import org.openjdk.jmh.annotations.BenchmarkMode
 import org.openjdk.jmh.annotations.Mode
-import org.openjdk.jmh.annotations.OutputTimeUnit
 import java.util.concurrent.*
 import kotlin.reflect.*
 
-@ImplicitReflectionSerializer
-@ExperimentalStdlibApi
+/**
+ * ./gradlew :kotlinx-io-benchmarks:jvmBenchmark -PbenchmarkName="JsonBenchmark"
+ */
 @State(Scope.Benchmark)
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
+@UseExperimental(ExperimentalStdlibApi::class, ImplicitReflectionSerializer::class)
 class JsonBenchmark {
 
     val canada = Resource("canada.json").readText()

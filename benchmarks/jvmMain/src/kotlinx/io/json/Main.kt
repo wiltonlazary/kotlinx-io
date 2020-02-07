@@ -5,6 +5,7 @@ package kotlinx.io.json
 import kotlinx.io.*
 import kotlinx.io.bytes.*
 import kotlinx.io.json.data.*
+import kotlinx.io.json.utils.*
 import kotlinx.io.text.*
 import kotlinx.serialization.*
 import java.io.*

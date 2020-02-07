@@ -1,7 +1,8 @@
-package kotlinx.io.json
+package kotlinx.io.json.utils
 
 import com.fasterxml.jackson.module.kotlin.*
 import com.google.gson.*
+import kotlinx.io.json.*
 import kotlinx.serialization.*
 import kotlinx.serialization.json.*
 import kotlin.reflect.*
@@ -35,7 +36,8 @@ object JacksonJson : JsonAdapter {
 
     override fun <T> parse(content: String, type: KType, clazz: Class<T>): T = jackson.readValue(content, clazz)
 
-    override fun <T> encode(data: T, type: KType): String = jackson.writeValueAsString(data)
+    override fun <T> encode(data: T, type: KType): String = jackson
+        .writeValueAsString(data)
 }
 
 object GsonJson : JsonAdapter {
