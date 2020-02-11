@@ -4,7 +4,7 @@
 package kotlinx.io.json
 
 import kotlinx.io.*
-import kotlinx.io.text.*
+import kotlinx.io.text.utf8.*
 import kotlinx.serialization.json.*
 
 internal class ioJsonReader(private val source: Input) {

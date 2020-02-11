@@ -24,7 +24,7 @@ private val largeTextPacketASCII = BytesOutput().apply {
 
 fun main() {
     var result: Any = Unit
-    repeat(10) {
+    repeat(1000) {
 //        result = parseTwitter()
         result = readLargeASCII()
     }
