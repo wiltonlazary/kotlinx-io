@@ -1,8 +1,7 @@
 package kotlinx.io.json
 
 import kotlinx.serialization.*
-import kotlinx.serialization.json.JsonDecodingException
-import kotlinx.serialization.json.JsonEncodingException
+import kotlinx.serialization.json.*
 
 
 fun ioInvalidFloatingPoint(value: Number, type: String) = JsonEncodingException(

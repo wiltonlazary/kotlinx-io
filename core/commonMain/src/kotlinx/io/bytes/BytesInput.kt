@@ -17,7 +17,7 @@ public class BytesInput internal constructor(
      * Count of remaining bytes in [BytesInput].
      */
     public val remaining: Int
-        get() = cacheRemaining()
+        get() = remainingCacheSize()
 
     override fun fill(buffer: Buffer, startIndex: Int, endIndex: Int): Int {
         return 0

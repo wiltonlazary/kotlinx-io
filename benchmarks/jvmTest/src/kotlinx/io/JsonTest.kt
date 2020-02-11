@@ -1,6 +1,5 @@
 package kotlinx.io
 
-import kotlinx.io.json.*
 import kotlinx.io.json.data.*
 import kotlinx.io.json.utils.*
 import kotlinx.serialization.*
@@ -10,6 +9,7 @@ import kotlin.test.*
 class JsonTest {
     val canada = Resource("canada.json").readText()
     val citm = Resource("citm_catalog.json").readText()
+    val twitter = Resource("twitter.json").readText()
 
     val jsons = listOf(
         KxJson,
@@ -20,12 +20,10 @@ class JsonTest {
 
     @Test
     fun testBenchmarks() {
-        while (true) {
-            jsons.forEach {
-                equalsBackAndForth<Canada>(canada, it)
-                equalsBackAndForth<CitmCatalog>(citm, it)
-                equalsBackAndForth<Twitter>(twitter, it)
-            }
+        jsons.forEach {
+            equalsBackAndForth<Canada>(canada, it)
+            equalsBackAndForth<CitmCatalog>(citm, it)
+            equalsBackAndForth<Twitter>(twitter, it)
         }
     }
 

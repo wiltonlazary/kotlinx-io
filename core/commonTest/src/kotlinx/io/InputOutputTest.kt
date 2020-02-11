@@ -265,7 +265,7 @@ class InputOutputTest {
     fun testWriteDirectAfterSmallWrites() {
         val input = buildInput {
             writeByte(42)
-            writeBufferDirect(bufferOf(ByteArray(4097)))
+            writeBuffer(bufferOf(ByteArray(4097)))
         }
 
         assertEquals(42, input.readByte())

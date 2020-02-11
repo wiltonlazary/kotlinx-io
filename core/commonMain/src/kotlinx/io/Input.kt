@@ -2,8 +2,6 @@ package kotlinx.io
 
 import kotlinx.io.buffer.*
 import kotlinx.io.bytes.*
-import kotlinx.io.bytes.Bytes
-import kotlinx.io.pointed
 import kotlinx.io.pool.*
 import kotlin.math.*
 
@@ -142,7 +140,7 @@ public abstract class Input : Closeable {
                 return copyAvailableTo(destination)
             }
 
-            val count =  readBufferRange { buffer, startOffset, endOffset ->
+            val count = readBufferRange { buffer, startOffset, endOffset ->
                 destination.writeBuffer(buffer, startOffset, endOffset)
                 endOffset - startOffset
             }
