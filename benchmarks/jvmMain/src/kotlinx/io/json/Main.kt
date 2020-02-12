@@ -9,13 +9,14 @@ import kotlinx.io.json.utils.*
 import kotlinx.io.text.*
 import kotlinx.serialization.*
 import java.io.*
+import java.io.ByteArrayInputStream
 import kotlin.reflect.*
 
 private val twitter = File("benchmarks/commonMain/resources/twitter.json").readText()
 
 private val smallTextBytesASCII = "ABC.".toByteArray()
 
-private val largeTextBytesASCII = ByteArray(smallTextBytesASCII.size * 10000) {
+private val largeTextBytesASCII = ByteArray(smallTextBytesASCII.size * 10000 * 10000) {
     smallTextBytesASCII[it % smallTextBytesASCII.size]
 }
 private val largeTextPacketASCII = BytesOutput().apply {
@@ -24,10 +25,7 @@ private val largeTextPacketASCII = BytesOutput().apply {
 
 fun main() {
     var result: Any = Unit
-    repeat(1000) {
-//        result = parseTwitter()
-        result = readLargeASCII()
-    }
+    result = readLargeASCII()
     println(result)
 }
 
@@ -38,3 +36,11 @@ private fun parseTwitter(): Twitter =
 
 private fun readLargeASCII(): String =
     largeTextPacketASCII.createInput().readUtf8String()
+
+private fun constructorLargeASCII(): String = String(largeTextBytesASCII, Charsets.UTF_8)
+
+private fun readReader() {
+    val x = ByteArrayInputStream(largeTextBytesASCII)
+        .bufferedReader()
+        .readText()
+}

@@ -94,6 +94,7 @@ benchmark {
     configurations {
         main {
             iterations = 10 // number of iterations
+            warmups = 10
             iterationTime = 1000
 
             iterationTimeUnit = "ms"

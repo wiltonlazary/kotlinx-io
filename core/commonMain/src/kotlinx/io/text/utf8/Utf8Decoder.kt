@@ -8,7 +8,30 @@ import kotlinx.io.text.*
  *
  * @throws MalformedInputException if decoder fail to recognize charset.
  */
-fun Input.decodeUtf8Chars(consumer: (Char) -> Boolean): Int {
+
+inline fun Input.decodeUtf8Chars(crossinline consumer: (Char) -> Boolean): Int {
+    var last = Byte.MIN_VALUE
+    val count = readUntil {
+        last = it
+
+        val ascii = it > 0
+        if (ascii) {
+            consumer(it.toChar())
+        }
+        ascii
+    }
+
+    if (last > 0) {
+        return count
+    }
+
+    return decodeUtf8CharsSlow(consumer)
+}
+
+@PublishedApi
+internal inline fun Input.decodeUtf8CharsSlow(
+    crossinline consumer: (Char) -> Boolean
+): Int {
     var byteCount = 0
     var value = 0
     var state = STATE_UTF_8

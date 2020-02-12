@@ -417,6 +417,7 @@ public abstract class Input : Closeable {
      *
      * @return consumed bytes count
      */
+    @PublishedApi
     internal fun readBufferRange(reader: (Buffer, startOffset: Int, endOffset: Int) -> Int): Int {
         if (position == limit && fetchCachedOrFill() == 0) {
             return 0
