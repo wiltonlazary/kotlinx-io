@@ -1,6 +1,7 @@
 package kotlinx.io.text.utf8
 
 import kotlinx.io.*
+import kotlinx.io.buffer.*
 import kotlinx.io.text.*
 
 private val Utf8StateMachine = intArrayOf(

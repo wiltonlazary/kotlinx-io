@@ -5,21 +5,16 @@ package kotlinx.io.buffer
 import kotlinx.io.*
 import org.khronos.webgl.*
 
-public actual class Buffer(public val view: DataView) {
+public actual class Buffer(public val view: DataView)
 
-    public actual inline val size: Int get() = view.byteLength
+public actual inline val Buffer.size: Int get() = view.byteLength
 
-    public actual fun loadByteAt(index: Int): Byte = checked(index) {
-        return view.getInt8(index)
-    }
+public actual fun Buffer.loadByteAt(index: Int): Byte = checked(index) {
+    return view.getInt8(index)
+}
 
-    public actual fun storeByteAt(index: Int, value: Byte) = checked(index) {
-        view.setInt8(index, value)
-    }
-
-    public actual companion object {
-        public actual val EMPTY: Buffer = Buffer(DataView(ArrayBuffer(0)))
-    }
+public actual fun Buffer.storeByteAt(index: Int, value: Byte) = checked(index) {
+    view.setInt8(index, value)
 }
 
 /**

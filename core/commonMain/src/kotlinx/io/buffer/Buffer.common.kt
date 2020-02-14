@@ -3,6 +3,8 @@ package kotlinx.io.buffer
 import kotlin.IndexOutOfBoundsException
 import kotlinx.io.*
 
+
+
 /**
  * [Buffer] represents a linear range of sequentially placed and randomly accessible bytes.
  * [Buffer] primitive is used as the underlying storage for higher-level primitives such as [Bytes], [Input] and [Output].
@@ -34,31 +36,29 @@ import kotlinx.io.*
  * [Buffer] itself does not have any built-in endianness, and its content interpretation is defined
  * by the owner/user of the buffer. By default, all stores and loads are performed in network byte order (big-endian).
  */
-public expect class Buffer {
-    /**
-     * Size of buffer range in bytes.
-     */
-    public val size: Int
+public expect class Buffer
 
-    /**
-     * Returns byte at [index] position.
-     * May throw [IndexOutOfBoundsException] if index is negative or greater than buffer size.
-     */
-    public fun loadByteAt(index: Int): Byte
+/**
+ * Represents an empty buffer.
+ */
+public val EMPTY_BUFFER: Buffer = bufferOf(ByteArray(0))
 
-    /**
-     * Writes byte [value] at the specified [index].
-     * May throw [IndexOutOfBoundsException] if index is negative or greater than buffer size.
-     */
-    public fun storeByteAt(index: Int, value: Byte)
+/**
+ * Size of buffer range in bytes.
+ */
+public expect val Buffer.size: Int
 
-    public companion object {
-        /**
-         * Represents an empty buffer.
-         */
-        public val EMPTY: Buffer
-    }
-}
+/**
+ * Returns byte at [index] position.
+ * May throw [IndexOutOfBoundsException] if index is negative or greater than buffer size.
+ */
+public expect fun Buffer.loadByteAt(index: Int): Byte
+
+/**
+ * Writes byte [value] at the specified [index].
+ * May throw [IndexOutOfBoundsException] if index is negative or greater than buffer size.
+ */
+public expect fun Buffer.storeByteAt(index: Int, value: Byte)
 
 /**
  * Wrap [array] into [Buffer] from [startIndex] to [endIndex].

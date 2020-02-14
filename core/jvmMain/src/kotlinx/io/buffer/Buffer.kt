@@ -7,24 +7,30 @@ import java.nio.*
 import java.nio.ByteOrder
 
 @Suppress("ACTUAL_WITHOUT_EXPECT")
-public actual inline class Buffer(val buffer: ByteBuffer) {
-    public actual inline val size: Int get() = buffer.limit()
+actual typealias Buffer = ByteBuffer
 
-    public actual inline fun loadByteAt(index: Int): Byte = buffer.get(index)
+/**
+ * Size of buffer range in bytes.
+ */
+public actual inline val Buffer.size: Int get() = limit()
 
-    public actual inline fun storeByteAt(index: Int, value: Byte) {
-        buffer.put(index, value)
-    }
+/**
+ * Returns byte at [index] position.
+ * May throw [IndexOutOfBoundsException] if index is negative or greater than buffer size.
+ */
+public actual fun Buffer.loadByteAt(index: Int): Byte = get(index)
 
-    public actual companion object {
-        public actual val EMPTY: Buffer = Buffer(ByteBuffer.allocate(0).order(ByteOrder.BIG_ENDIAN))
-    }
+/**
+ * Writes byte [value] at the specified [index].
+ * May throw [IndexOutOfBoundsException] if index is negative or greater than buffer size.
+ */
+public actual fun Buffer.storeByteAt(index: Int, value: Byte) {
+    put(index, value)
 }
 
 /**
  * Wrap [array] into [Buffer] from [startIndex] to [endIndex].
  */
 @ExperimentalIoApi
-public actual fun bufferOf(array: ByteArray, startIndex: Int, endIndex: Int): Buffer {
-    return Buffer(ByteBuffer.wrap(array, startIndex, endIndex - startIndex))
-}
+public actual fun bufferOf(array: ByteArray, startIndex: Int, endIndex: Int): Buffer =
+    ByteBuffer.wrap(array, startIndex, endIndex - startIndex)

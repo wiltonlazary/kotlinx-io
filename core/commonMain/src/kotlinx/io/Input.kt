@@ -98,7 +98,7 @@ public abstract class Input : Closeable {
     internal constructor(bytes: Bytes, pool: ObjectPool<Buffer>) {
         bufferPool = pool
         if (bytes.size() == 0) {
-            buffer = Buffer.EMPTY
+            buffer = EMPTY_BUFFER
             return
         }
 

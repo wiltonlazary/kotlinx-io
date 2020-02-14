@@ -4,31 +4,27 @@ package kotlinx.io.buffer
 
 import kotlinx.cinterop.*
 import kotlinx.io.*
-import kotlin.native.concurrent.*
 
 public actual class Buffer constructor(
     val array: ByteArray,
     inline val offset: Int = 0,
-    actual inline val size: Int = array.size - offset
+    inline val size: Int = array.size - offset
 ) {
     init {
         requirePositiveIndex(size, "size")
     }
 
-    public actual inline fun loadByteAt(index: Int): Byte = array[assertIndex(offset + index, 1)]
-
-    public actual inline fun storeByteAt(index: Int, value: Byte) {
-        array[assertIndex(offset + index, 1)] = value
-    }
-
-    public override fun toString(): String = usePointer {
+    public fun Buffer.toString(): String = usePointer {
         "Buffer[$it:$size]"
     }
+}
 
-    public actual companion object {
-        @SharedImmutable
-        public actual val EMPTY: Buffer = Buffer(ByteArray(0))
-    }
+public actual inline val Buffer.size get() = size
+
+public actual inline fun Buffer.loadByteAt(index: Int): Byte = array[assertIndex(offset + index, 1)]
+
+public actual inline fun Buffer.storeByteAt(index: Int, value: Byte) {
+    array[assertIndex(offset + index, 1)] = value
 }
 
 /**

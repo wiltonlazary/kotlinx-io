@@ -6,10 +6,9 @@ import java.io.*
 
 
 public fun OutputStream.writeBuffer(buffer: Buffer, startIndex: Int, endIndex: Int): Int {
-    val container = buffer.buffer
     val length = endIndex - startIndex
-    if (container.hasArray()) {
-        write(container.array(), container.arrayOffset() + startIndex, length)
+    if (buffer.hasArray()) {
+        write(buffer.array(), buffer.arrayOffset() + startIndex, length)
     } else {
         val content = buffer.toByteArray(startIndex, length)
         write(content)
@@ -29,10 +28,9 @@ public fun OutputStream.toOutput(): Output = object : Output() {
 }
 
 public fun InputStream.readTo(buffer: Buffer, startIndex: Int, endIndex: Int): Int {
-    val container = buffer.buffer
     val size = endIndex - startIndex
-    return if (container.hasArray()) {
-        val count = read(container.array(), container.arrayOffset() + startIndex, size)
+    return if (buffer.hasArray()) {
+        val count = read(buffer.array(), buffer.arrayOffset() + startIndex, size)
         if (count == -1) 0 else count
     } else {
         val array = ByteArray(size)
