@@ -1,3 +1,5 @@
+@file:UseExperimental(ExperimentalStdlibApi::class)
+
 package kotlinx.io.json
 
 import kotlinx.io.*
@@ -36,13 +38,22 @@ class WIPBenchmark {
 //    @Benchmark
 //    fun largeASCIIStringCtor() = String(largeTextBytesASCII, Charsets.UTF_8)
 
-    @UseExperimental(ExperimentalStdlibApi::class)
+//    @UseExperimental(ExperimentalStdlibApi::class)
+//    @Benchmark
+//    fun benchmarkParseCanada() = KxJson.parse(ByteArrayInput(canadaBytes), typeOf<Canada>(), Canada::class.java)
+
+
     @Benchmark
-    fun benchmarkParse() = KxJson.parse(ByteArrayInput(canadaBytes), typeOf<Canada>(), Canada::class.java)
+    fun benchmarkWrite(): Output {
+        val stream = BytesOutput()
+        KxJson.encode(canadaData, typeOf<Canada>())
+        return stream
+    }
 
     companion object {
         private val canada = Resource("canada.json").readText()
         private val canadaBytes = canada.toByteArray()
+        private val canadaData = KxJson.parse(canada, typeOf<Canada>(), Canada::class.java)
 
         private val smallTextBytes = "\u0422\u0432\u0437.".toByteArray()
         private val smallTextBytesASCII = "ABC.".toByteArray()

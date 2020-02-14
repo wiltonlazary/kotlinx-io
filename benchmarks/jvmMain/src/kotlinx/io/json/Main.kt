@@ -15,6 +15,7 @@ import kotlin.reflect.*
 private val twitter = File("benchmarks/commonMain/resources/twitter.json").readText()
 private val canada = File("benchmarks/commonMain/resources/canada.json").readText()
 private val canadaBytes = canada.toByteArray()
+val canadaData = KxJson.parse(ByteArrayInput(canadaBytes), typeOf<Canada>(), Canada::class.java)
 
 private val smallTextBytesASCII = "ABC.".toByteArray()
 
@@ -30,6 +31,13 @@ private fun parseTwitter(): Twitter =
 
 private fun parseCanadaInput(): Canada =
     KxJson.parse(ByteArrayInput(canadaBytes), typeOf<Canada>(), Canada::class.java)
+
+private fun writeCanadaInput(): Output {
+    val output = BytesOutput()
+    KxJson.encode(canadaData, typeOf<Canada>(), output)
+    return output
+}
+
 
 private fun parseCanadaGson(): Canada =
     GsonJson.parse(ByteArrayInputStream(canadaBytes), typeOf<Canada>(), Canada::class.java)
@@ -48,7 +56,8 @@ private fun readReader() {
 
 fun main() {
     while (true) {
-        parseCanadaInput()
+        writeCanadaInput()
+//        parseCanadaInput()
 //        parseCanadaGson()
     }
 }
