@@ -128,7 +128,7 @@ public abstract class Output(
         return position
     }
 
-    internal fun writePrimitive(
+    internal inline fun writePrimitive(
         primitiveSize: Int,
         writeDirect: (buffer: Buffer, offset: Int) -> Unit,
         longValue: () -> Long

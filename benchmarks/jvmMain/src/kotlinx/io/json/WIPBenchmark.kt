@@ -2,19 +2,21 @@ package kotlinx.io.json
 
 import kotlinx.io.*
 import kotlinx.io.bytes.*
-import kotlinx.io.text.*
+import kotlinx.io.json.data.*
+import kotlinx.io.json.utils.*
 import org.openjdk.jmh.annotations.*
 import java.util.concurrent.*
+import kotlin.reflect.*
 
 /**
  * ./gradlew :kotlinx-io-benchmarks:jvmBenchmark -PbenchmarkName="WIPBenchmark"
  */
 @State(Scope.Benchmark)
-@BenchmarkMode(Mode.Throughput)
+@BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
 class WIPBenchmark {
-    @Benchmark
-    fun largeASCIIKt() = largeTextPacketASCII.createInput().readUtf8String()
+//    @Benchmark
+//    fun largeASCIIKt() = largeTextPacketASCII.createInput().readUtf8String()
 
 //    @Benchmark
 //    fun largeAsciiBA() = buildString {
@@ -34,7 +36,14 @@ class WIPBenchmark {
 //    @Benchmark
 //    fun largeASCIIStringCtor() = String(largeTextBytesASCII, Charsets.UTF_8)
 
+    @UseExperimental(ExperimentalStdlibApi::class)
+    @Benchmark
+    fun benchmarkParse() = KxJson.parse(ByteArrayInput(canadaBytes), typeOf<Canada>(), Canada::class.java)
+
     companion object {
+        private val canada = Resource("canada.json").readText()
+        private val canadaBytes = canada.toByteArray()
+
         private val smallTextBytes = "\u0422\u0432\u0437.".toByteArray()
         private val smallTextBytesASCII = "ABC.".toByteArray()
 

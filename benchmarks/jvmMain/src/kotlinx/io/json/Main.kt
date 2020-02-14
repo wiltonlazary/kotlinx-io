@@ -13,6 +13,8 @@ import java.io.ByteArrayInputStream
 import kotlin.reflect.*
 
 private val twitter = File("benchmarks/commonMain/resources/twitter.json").readText()
+private val canada = File("benchmarks/commonMain/resources/canada.json").readText()
+private val canadaBytes = canada.toByteArray()
 
 private val smallTextBytesASCII = "ABC.".toByteArray()
 
@@ -23,24 +25,30 @@ private val largeTextPacketASCII = BytesOutput().apply {
     writeByteArray(largeTextBytesASCII)
 }
 
-fun main() {
-    var result: Any = Unit
-    result = readLargeASCII()
-    println(result)
-}
-
-
-@UseExperimental(ExperimentalStdlibApi::class)
 private fun parseTwitter(): Twitter =
     KxJson.parse(twitter, typeOf<Twitter>(), Twitter::class.java)
+
+private fun parseCanadaInput(): Canada =
+    KxJson.parse(ByteArrayInput(canadaBytes), typeOf<Canada>(), Canada::class.java)
+
+private fun parseCanadaGson(): Canada =
+    GsonJson.parse(ByteArrayInputStream(canadaBytes), typeOf<Canada>(), Canada::class.java)
 
 private fun readLargeASCII(): String =
     largeTextPacketASCII.createInput().readUtf8String()
 
-private fun constructorLargeASCII(): String = String(largeTextBytesASCII, Charsets.UTF_8)
+private fun constructorLargeASCII(): String =
+    String(largeTextBytesASCII, Charsets.UTF_8)
 
 private fun readReader() {
     val x = ByteArrayInputStream(largeTextBytesASCII)
         .bufferedReader()
         .readText()
+}
+
+fun main() {
+    while (true) {
+        parseCanadaInput()
+//        parseCanadaGson()
+    }
 }

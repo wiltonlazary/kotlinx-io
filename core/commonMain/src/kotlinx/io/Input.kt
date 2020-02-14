@@ -53,6 +53,7 @@ public abstract class Input : Closeable {
      * Buffer for current operations.
      * Note, that buffer can be exhausted (position == limit).
      */
+    @PublishedApi
     internal var buffer: Buffer
 
     /**
@@ -345,7 +346,7 @@ public abstract class Input : Closeable {
      * Reads a primitive of [primitiveSize] either directly from a buffer with [readDirect]
      * or byte-by-byte into a Long and using [fromLong] to convert to target type.
      */
-    internal fun readPrimitive(
+    internal inline fun readPrimitive(
         primitiveSize: Int,
         readDirect: (buffer: Buffer, offset: Int) -> Long
     ): Long {
@@ -385,7 +386,7 @@ public abstract class Input : Closeable {
      * Reads [size] unsigned bytes from an Input and calls [consumer] on each of them.
      * @throws EOFException if no more bytes available.
      */
-    private fun readBytes(size: Int, consumer: (unsignedByte: Int) -> Unit) {
+    private inline fun readBytes(size: Int, consumer: (unsignedByte: Int) -> Unit) {
         var remaining = size
 
         var current = position
@@ -418,7 +419,7 @@ public abstract class Input : Closeable {
      * @return consumed bytes count
      */
     @PublishedApi
-    internal fun readBufferRange(reader: (Buffer, startOffset: Int, endOffset: Int) -> Int): Int {
+    internal inline fun readBufferRange(crossinline reader: (Buffer, startOffset: Int, endOffset: Int) -> Int): Int {
         if (position == limit && fetchCachedOrFill() == 0) {
             return 0
         }
@@ -460,7 +461,8 @@ public abstract class Input : Closeable {
      *
      * Current [buffer] should be exhausted at this moment, i.e. [position] should be equal to [limit].
      */
-    private fun fetchCachedOrFill(): Int {
+    @PublishedApi
+    internal fun fetchCachedOrFill(): Int {
         val discard = previewDiscard
         val preview = previewBytes
 
