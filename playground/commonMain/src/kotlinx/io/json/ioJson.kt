@@ -3,6 +3,7 @@
  */
 package kotlinx.io.json
 
+import kotlinx.io.*
 import kotlinx.io.bytes.*
 import kotlinx.io.json.internal.*
 import kotlinx.io.text.*
@@ -100,6 +101,15 @@ public constructor(
         return result.createInput().readUtf8String()
     }
 
+    public fun <T> stringify(serializer: SerializationStrategy<T>, obj: T, output: Output) {
+        val encoder = ioStreamingJsonOutput(
+            output, this,
+            ioWriteMode.OBJ,
+            arrayOfNulls(ioWriteMode.values().size)
+        )
+        encoder.encode(serializer, obj)
+    }
+
     /**
      * Serializes [value] into an equivalent [JsonElement] using provided [serializer].
      * @throws [JsonException] if given value can not be encoded
@@ -128,6 +138,16 @@ public constructor(
         val reader = ioJsonReader(buildInput { writeUtf8String(string) })
         val input = ioStreamingJsonInput(this, ioWriteMode.OBJ, reader)
         val result = input.decode(deserializer)
+        if (!reader.isDone) {
+            error("Reader has not consumed the whole input: $reader")
+        }
+        return result
+    }
+
+    public fun <T> parse(deserializer: DeserializationStrategy<T>, input: Input): T {
+        val reader = ioJsonReader(input)
+        val jsonInput = ioStreamingJsonInput(this, ioWriteMode.OBJ, reader)
+        val result = jsonInput.decode(deserializer)
         if (!reader.isDone) {
             error("Reader has not consumed the whole input: $reader")
         }
@@ -193,8 +213,18 @@ public constructor(
             plain.stringify(serializer, obj)
 
         @UnstableDefault
+        fun <T> stringify(serializer: SerializationStrategy<T>, obj: T, output: Output) {
+            plain.stringify(serializer, obj, output)
+        }
+
+
+        @UnstableDefault
         override fun <T> parse(deserializer: DeserializationStrategy<T>, string: String): T =
             plain.parse(deserializer, string)
+
+        @UnstableDefault
+        fun <T> parse(deserializer: DeserializationStrategy<T>, input: Input): T =
+            plain.parse(deserializer, input)
     }
 }
 

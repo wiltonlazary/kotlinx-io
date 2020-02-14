@@ -2,6 +2,7 @@ package kotlinx.io.json
 
 import kotlinx.io.*
 import kotlinx.io.bytes.*
+import kotlinx.io.text.*
 import org.openjdk.jmh.annotations.*
 import java.util.concurrent.*
 
@@ -12,8 +13,8 @@ import java.util.concurrent.*
 @BenchmarkMode(Mode.Throughput)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
 class WIPBenchmark {
-//    @Benchmark
-//    fun largeASCIIKt() = largeTextPacketASCII.createInput().readUtf8String()
+    @Benchmark
+    fun largeASCIIKt() = largeTextPacketASCII.createInput().readUtf8String()
 
 //    @Benchmark
 //    fun largeAsciiBA() = buildString {
@@ -25,13 +26,13 @@ class WIPBenchmark {
 //        decodeAsciiCharsBB(java.nio.ByteBuffer.wrap(largeTextBytesASCII, 0, largeTextBytesASCII.size), this)
 //    }
 
-    @Benchmark
-    fun largeAsciiReader() = buildString {
-        ByteArrayInputStream(largeTextBytesASCII).bufferedReader().readText()
-    }
+//    @Benchmark
+//    fun largeAsciiReader() = buildString {
+//        ByteArrayInputStream(largeTextBytesASCII).bufferedReader().readText()
+//    }
 
-    @Benchmark
-    fun largeASCIIStringCtor() = String(largeTextBytesASCII, Charsets.UTF_8)
+//    @Benchmark
+//    fun largeASCIIStringCtor() = String(largeTextBytesASCII, Charsets.UTF_8)
 
     companion object {
         private val smallTextBytes = "\u0422\u0432\u0437.".toByteArray()
