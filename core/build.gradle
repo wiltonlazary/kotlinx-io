@@ -24,7 +24,6 @@ kotlin {
     js {
         nodejs {
             testTask {
-                debug = false
                 useMocha {
                     timeout = "0"
                 }
@@ -105,7 +104,6 @@ kotlin {
                 }
             }
         }
-
 
         configure(cinteropTargets) {
             binaries.getTest("DEBUG").optimized = true
