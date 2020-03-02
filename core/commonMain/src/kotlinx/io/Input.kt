@@ -53,17 +53,20 @@ public abstract class Input : Closeable {
      * Buffer for current operations.
      * Note, that buffer can be exhausted (position == limit).
      */
-    private var buffer: Buffer
+    @PublishedApi
+    internal var buffer: Buffer
 
     /**
      * Current reading position in the [buffer].
      */
-    private var position: Int = 0
+    @PublishedApi
+    internal var position: Int = 0
 
     /**
      * Number of bytes loaded into the [buffer].
      */
-    private var limit: Int = 0
+    @PublishedApi
+    internal var limit: Int = 0
 
     /**
      * Index of a current buffer in the [previewBytes].
@@ -384,7 +387,8 @@ public abstract class Input : Closeable {
      *
      * @return consumed bytes count
      */
-    internal inline fun readBufferRange(reader: (Buffer, startOffset: Int, endOffset: Int) -> Int): Int {
+    @PublishedApi
+    internal inline fun readBufferRange(crossinline reader: (Buffer, startOffset: Int, endOffset: Int) -> Int): Int {
         if (position == limit && fetchCachedOrFill() == 0) {
             return 0
         }
@@ -428,7 +432,8 @@ public abstract class Input : Closeable {
      *
      * Current [buffer] should be exhausted at this moment, i.e. [position] should be equal to [limit].
      */
-    private fun fetchCachedOrFill(): Int {
+    @PublishedApi
+    internal fun fetchCachedOrFill(): Int {
         val discard = previewDiscard
         val preview = previewBytes
 
