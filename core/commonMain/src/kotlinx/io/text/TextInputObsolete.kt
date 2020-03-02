@@ -105,7 +105,7 @@ public fun Input.readUtf8StringUntilDelimiters(delimiters: String): String = bui
  *
  * @throws MalformedInputException if decoder fail to recognize charset.
  */
-private inline fun Input.decodeUtf8Chars(consumer: (Char) -> Boolean): Int {
+private inline fun Input.decodeUtf8Chars(crossinline consumer: (Char) -> Boolean): Int {
     var byteCount = 0
     var value = 0
     var state = STATE_UTF_8
@@ -262,7 +262,7 @@ private const val STATE_FINISH = -2
 internal const val STATE_UTF_8 = 0
 internal const val STATE_REJECT = 1
 
-private inline fun Input.decodeUtf8(consumer: (Int) -> Boolean) {
+private inline fun Input.decodeUtf8(crossinline consumer: (Int) -> Boolean) {
     val stateMachine = Utf8StateMachine
     var state = STATE_UTF_8
     var codePoint = 0
@@ -302,7 +302,7 @@ private inline fun Input.decodeUtf8(consumer: (Int) -> Boolean) {
     }
 }
 
-private inline fun Input.decodeUtf8CharsAlt(consumer: (Char) -> Boolean) {
+private inline fun Input.decodeUtf8CharsAlt(crossinline consumer: (Char) -> Boolean) {
     decodeUtf8 { codePoint ->
         when {
             codePoint ushr 16 == 0 -> consumer(codePoint.toChar())
