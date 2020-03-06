@@ -42,6 +42,11 @@ public class BytesOutput(
         return false
     }
 
+    override fun flushAndUpdate(source: Buffer, startIndex: Int, endIndex: Int): Buffer {
+        flush(source, startIndex, endIndex)
+        return bufferPool.borrow()
+    }
+
     override fun closeSource() {
         // No source to close.
     }

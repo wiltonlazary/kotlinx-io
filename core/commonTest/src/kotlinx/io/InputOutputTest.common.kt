@@ -334,7 +334,7 @@ class InputOutputTest : LeakDetector() {
     @Test
     fun testReadUntilNotConsume() {
         var count = 0
-        val input = LambdaInput { buffer, startIndex, endIndex ->
+        val input = LambdaInput(pool) { buffer, startIndex, endIndex ->
             when (count++) {
                 0 -> {
                     buffer.storeByteAt(startIndex, 'a'.toByte())
@@ -350,12 +350,15 @@ class InputOutputTest : LeakDetector() {
 
         assertEquals(1, input.readUntil { it != 'a'.toByte() })
         assertEquals('b'.toByte(), input.readByte())
+
+        input.close()
     }
 
     @Test
     fun testReadUntilEof() {
-        val input = LambdaInput { _, _, _ -> 0 }
+        val input = LambdaInput(pool) { _, _, _ -> 0 }
         input.readUntil { true }
+        input.close()
     }
 
     private fun checkException(block: () -> Unit) {

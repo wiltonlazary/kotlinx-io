@@ -16,7 +16,7 @@ inline fun Input.decodeUtf8Chars(
     var state = STATE_UTF_8
     var count = 0
 
-    while (state != STATE_FINISH && !eof()) {
+    while (state != STATE_FINISH && !exhausted()) {
         count += readBufferRange { buffer, startOffset, endOffset ->
             for (offset in startOffset until endOffset) {
                 val byte = buffer.loadByteAt(offset).toInt() and 0xff
