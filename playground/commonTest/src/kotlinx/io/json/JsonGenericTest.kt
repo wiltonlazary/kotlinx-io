@@ -5,7 +5,7 @@
 package kotlinx.io.json
 
 import kotlinx.serialization.*
-import kotlinx.serialization.internal.*
+import kotlinx.serialization.builtins.*
 import kotlin.test.*
 
 class JsonGenericTest : JsonTestBase() {
@@ -20,7 +20,7 @@ class JsonGenericTest : JsonTestBase() {
     @Test
     fun testWriteDefaultPair() = parametrizedTest { useStreaming ->
         val pair = 42 to "foo"
-        val serializer = PairSerializer(IntSerializer, StringSerializer)
+        val serializer = PairSerializer(Int.serializer(), String.serializer())
         val s = unquoted.stringify(serializer, pair, useStreaming)
         assertEquals("{first:42,second:foo}", s)
         val restored = unquoted.parse(serializer, s, useStreaming)
@@ -30,7 +30,7 @@ class JsonGenericTest : JsonTestBase() {
     @Test
     fun testWritePlainTriple() = parametrizedTest { useStreaming ->
         val triple = Triple(42, "foo", false)
-        val serializer = TripleSerializer(IntSerializer, StringSerializer, BooleanSerializer)
+        val serializer = TripleSerializer(Int.serializer(), String.serializer(), Boolean.serializer())
         val s = unquoted.stringify(serializer, triple, useStreaming)
         assertEquals("{first:42,second:foo,third:false}", s)
         val restored = unquoted.parse(serializer, s, useStreaming)

@@ -19,8 +19,10 @@ public fun OutputStream.writeBuffer(buffer: Buffer, startIndex: Int, endIndex: I
 }
 
 public fun OutputStream.toOutput(): Output = object : Output() {
-    override fun flush(source: Buffer, startIndex: Int, endIndex: Int) {
+    override fun flush(source: Buffer, startIndex: Int, endIndex: Int): Boolean {
         writeBuffer(source, startIndex, endIndex)
+
+        return true
     }
 
     override fun closeSource() {

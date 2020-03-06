@@ -6,6 +6,7 @@ package kotlinx.io.json.internal
 
 import kotlinx.io.json.*
 import kotlinx.serialization.*
+import kotlinx.serialization.internal.*
 import kotlinx.serialization.json.*
 import kotlinx.serialization.modules.*
 import kotlin.collections.set
@@ -18,6 +19,7 @@ internal fun <T> ioJson.writeJson(value: T, serializer: SerializationStrategy<T>
     return result
 }
 
+@OptIn(InternalSerializationApi::class)
 private sealed class ioAbstractJsonTreeOutput(
     final override val json: ioJson,
     val nodeConsumer: (JsonElement) -> Unit
@@ -35,7 +37,9 @@ private sealed class ioAbstractJsonTreeOutput(
         encodeSerializableValue(ioJsonElementSerializer, element)
     }
 
-    override fun shouldEncodeElementDefault(desc: SerialDescriptor, index: Int): Boolean = configuration.encodeDefaults
+    override fun shouldEncodeElementDefault(descriptor: SerialDescriptor, index: Int): Boolean =
+        configuration.encodeDefaults
+
     override fun composeName(parentName: String, childName: String): String = childName
     abstract fun putElement(key: String, element: JsonElement)
     abstract fun getCurrent(): JsonElement
@@ -88,15 +92,18 @@ private sealed class ioAbstractJsonTreeOutput(
         putElement(tag, JsonLiteral(value.toString()))
     }
 
-    override fun beginStructure(desc: SerialDescriptor, vararg typeParams: KSerializer<*>): CompositeEncoder {
+    override fun beginStructure(
+        descriptor: SerialDescriptor,
+        vararg typeSerializers: KSerializer<*>
+    ): CompositeEncoder {
         val consumer =
             if (currentTagOrNull == null) nodeConsumer
             else { node -> putElement(currentTag, node) }
 
-        val encoder = when (desc.kind) {
+        val encoder = when (descriptor.kind) {
             StructureKind.LIST, is PolymorphicKind -> ioJsonTreeListOutput(json, consumer)
             StructureKind.MAP -> json.selectMapMode(
-                desc,
+                descriptor,
                 { ioJsonTreeMapOutput(json, consumer) },
                 { ioJsonTreeListOutput(json, consumer) }
             )
@@ -105,13 +112,13 @@ private sealed class ioAbstractJsonTreeOutput(
 
         if (writePolymorphic) {
             writePolymorphic = false
-            encoder.putElement(configuration.classDiscriminator, JsonPrimitive(desc.name))
+            encoder.putElement(configuration.classDiscriminator, JsonPrimitive(descriptor.serialName))
         }
 
         return encoder
     }
 
-    override fun endEncode(desc: SerialDescriptor) {
+    override fun endEncode(descriptor: SerialDescriptor) {
         nodeConsumer(getCurrent())
     }
 }
@@ -177,7 +184,7 @@ private class ioJsonTreeMapOutput(json: ioJson, nodeConsumer: (JsonElement) -> U
 private class ioJsonTreeListOutput(json: ioJson, nodeConsumer: (JsonElement) -> Unit) :
     ioAbstractJsonTreeOutput(json, nodeConsumer) {
     private val array: ArrayList<JsonElement> = arrayListOf()
-    override fun elementName(desc: SerialDescriptor, index: Int): String = index.toString()
+    override fun elementName(descriptor: SerialDescriptor, index: Int): String = index.toString()
 
     override fun shouldWriteElement(desc: SerialDescriptor, tag: String, index: Int): Boolean = true
 

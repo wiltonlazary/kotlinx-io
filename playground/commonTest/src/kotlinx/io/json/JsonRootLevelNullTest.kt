@@ -4,8 +4,10 @@
 
 package kotlinx.io.json
 
-import kotlinx.serialization.Serializable
+import kotlinx.serialization.*
+import kotlinx.serialization.builtins.*
 import kotlinx.serialization.internal.*
+import kotlinx.serialization.nullable
 import kotlin.test.*
 
 class JsonRootLevelNullTest : JsonTestBase() {

@@ -5,7 +5,7 @@ import java.nio.channels.*
 class NioChannelOutput(
     private val channel: WritableByteChannel
 ) : Output() {
-    override fun flush(source: Buffer, startIndex: Int, endIndex: Int) {
+    override fun flush(source: Buffer, startIndex: Int, endIndex: Int): Boolean {
         with(source.buffer) {
             position(startIndex)
             limit(endIndex)
@@ -14,6 +14,8 @@ class NioChannelOutput(
                 channel.write(this)
             }
         }
+
+        return true
     }
 
     override fun closeSource() {

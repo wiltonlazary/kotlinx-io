@@ -1,5 +1,3 @@
-@file:Suppress("FORBIDDEN_IDENTITY_EQUALS")
-
 package kotlinx.io.internal
 
 import kotlinx.io.buffer.*

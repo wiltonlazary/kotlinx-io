@@ -60,7 +60,7 @@ fun main(args: Array<String>) {
     val columns = List<MutableList<String>>(header.size) { mutableListOf() }
 
     var column = 0
-    while (!input.eof()) {
+    while (!input.exhausted()) {
         columns[column] += input.readUtf8StringUntilDelimiters(",\n")
         column = (column + 1) % header.size
     }

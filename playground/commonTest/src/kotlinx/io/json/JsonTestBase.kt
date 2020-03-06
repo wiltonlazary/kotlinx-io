@@ -8,7 +8,9 @@ import kotlinx.io.bytes.*
 import kotlinx.io.json.internal.*
 import kotlinx.io.text.*
 import kotlinx.serialization.*
+import kotlinx.serialization.builtins.*
 import kotlinx.serialization.json.*
+import kotlinx.serialization.list
 import kotlinx.serialization.modules.*
 import kotlin.test.*
 
@@ -49,7 +51,9 @@ abstract class JsonTestBase {
             // Overload to test public map extension
             stringify(map)
         } else {
-            stringify((context.getContextualOrDefault(K::class) to context.getContextualOrDefault(V::class)).map, map)
+            val key = context.getContextualOrDefault(K::class)
+            val value = context.getContextualOrDefault(V::class)
+            stringify(MapSerializer(key, value), map)
         }
     }
 
@@ -92,8 +96,10 @@ abstract class JsonTestBase {
             // Overload to test public map extension
             parseMap(content)
         } else {
+            val key = context.getContextualOrDefault(K::class)
+            val value = context.getContextualOrDefault(V::class)
             parse(
-                (context.getContextualOrDefault(K::class) to context.getContextualOrDefault(V::class)).map,
+                MapSerializer(key, value),
                 content,
                 useStreaming
             )
