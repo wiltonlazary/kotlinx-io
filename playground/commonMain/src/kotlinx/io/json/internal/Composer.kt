@@ -5,10 +5,10 @@ import kotlinx.io.json.*
 import kotlinx.io.text.*
 import kotlin.jvm.*
 
-@UseExperimental(ExperimentalStdlibApi::class)
+@OptIn(ExperimentalStdlibApi::class)
 private val BINARY_TRUE: ByteArray = "true".encodeToByteArray()
 
-@UseExperimental(ExperimentalStdlibApi::class)
+@OptIn(ExperimentalStdlibApi::class)
 private val BINARY_FALSE: ByteArray = "false".encodeToByteArray()
 
 internal class Composer(@JvmField internal val output: Output, private val json: ioJson) {

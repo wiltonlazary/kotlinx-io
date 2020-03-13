@@ -127,7 +127,7 @@ class InputPrimitivesTest : LeakDetector() {
 
         assertEquals(true, closed, "Should be closed")
 
-        @UseExperimental(ExperimentalStdlibApi::class)
+        @OptIn(ExperimentalStdlibApi::class)
         assertEquals("test", text.decodeToString(), "Content read")
     }
 
@@ -156,7 +156,7 @@ class InputPrimitivesTest : LeakDetector() {
 
         val data = ByteArray(5 + 4 + 4)
         input.readByteArray(data)
-        @UseExperimental(ExperimentalStdlibApi::class)
+        @OptIn(ExperimentalStdlibApi::class)
         assertEquals("test.123.zxc.", data.decodeToString())
     }
 

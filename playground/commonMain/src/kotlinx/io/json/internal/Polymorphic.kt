@@ -10,7 +10,7 @@ import kotlinx.serialization.internal.*
 import kotlinx.serialization.json.*
 
 
-@UseExperimental(InternalSerializationApi::class)
+@OptIn(InternalSerializationApi::class)
 @Suppress("UNCHECKED_CAST")
 internal inline fun <T> ioJsonOutput.encodePolymorphically(
     serializer: SerializationStrategy<T>,

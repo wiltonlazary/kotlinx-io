@@ -50,6 +50,6 @@ public class ByteArrayOutput(initialCapacity: Int = 16) : Output(UnmanagedBuffer
         }
     }
 
-    @UseExperimental(ExperimentalStdlibApi::class)
+    @OptIn(ExperimentalStdlibApi::class)
     private fun powOf2(minCapacity: Int) = if (minCapacity >= 1 shl 30) minCapacity else (1 shl (32 - (minCapacity - 1).countLeadingZeroBits()))
 }

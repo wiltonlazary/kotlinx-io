@@ -19,7 +19,7 @@ interface JsonAdapter {
     fun <T> encode(data: T, type: KType, output: Output)
 }
 
-@UseExperimental(ImplicitReflectionSerializer::class)
+@OptIn(ImplicitReflectionSerializer::class)
 object KxJson : JsonAdapter {
     override fun <T> parse(content: String, type: KType, clazz: Class<T>): T =
         ioJson.parse(serializer(type), content) as T
@@ -37,7 +37,7 @@ object KxJson : JsonAdapter {
     }
 }
 
-@UseExperimental(ImplicitReflectionSerializer::class)
+@OptIn(ImplicitReflectionSerializer::class)
 object SerializationJson : JsonAdapter {
     override fun <T> parse(content: String, type: KType, clazz: Class<T>): T =
         Json.nonstrict.parse(serializer(type), content) as T

@@ -17,7 +17,9 @@ import kotlin.reflect.*
 @State(Scope.Benchmark)
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
-@UseExperimental(ExperimentalStdlibApi::class, ImplicitReflectionSerializer::class)
+@OptIn(
+    ExperimentalStdlibApi::class, ImplicitReflectionSerializer::class
+)
 class JsonInputBenchmark {
     @Param("canada", "citm", "twitter")
     var datasetName: String = ""

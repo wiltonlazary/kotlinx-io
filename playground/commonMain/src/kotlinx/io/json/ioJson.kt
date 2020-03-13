@@ -74,7 +74,7 @@ public constructor(
     public constructor(block: ioJsonBuilder.() -> Unit) : this(
         ioJsonBuilder().apply { block() })
 
-    @UseExperimental(UnstableDefault::class)
+    @OptIn(UnstableDefault::class)
     @Deprecated(
         message = "Default constructor is deprecated, please specify desired configuration explicitly or use Json(JsonConfiguration.Default)",
         replaceWith = ReplaceWith("Json(JsonConfiguration.Default)"),
@@ -82,7 +82,7 @@ public constructor(
     )
     public constructor() : this(ioJsonConfiguration(useArrayPolymorphism = true))
 
-    @UseExperimental(UnstableDefault::class)
+    @OptIn(UnstableDefault::class)
     private constructor(builder: ioJsonBuilder) : this(builder.buildConfiguration(), builder.buildModule())
 
     /**
@@ -201,7 +201,7 @@ public constructor(
             ioJsonConfiguration(strictMode = false, useArrayPolymorphism = true)
         )
 
-        @UseExperimental(UnstableDefault::class)
+        @OptIn(UnstableDefault::class)
         override val context: SerialModule
             get() = plain.context
 

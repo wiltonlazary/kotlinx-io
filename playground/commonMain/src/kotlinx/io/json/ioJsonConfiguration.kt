@@ -70,7 +70,7 @@ public data class ioJsonConfiguration @UnstableDefault constructor(
          * Stable [ioJsonConfiguration] that is guaranteed to preserve its semantics between releases.
          * To have a stable base in your [Json] configuration you can use `Stable.copy(param = ...)`
          */
-        @UseExperimental(UnstableDefault::class)
+        @OptIn(UnstableDefault::class)
         @JvmStatic
         public val Stable = ioJsonConfiguration(
             encodeDefaults = true,

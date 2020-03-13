@@ -29,7 +29,7 @@ class JsonTest {
 
 }
 
-@UseExperimental(ImplicitReflectionSerializer::class, ExperimentalStdlibApi::class)
+@OptIn(ImplicitReflectionSerializer::class, ExperimentalStdlibApi::class)
 inline fun <reified T : Any> equalsBackAndForth(content: String, json: JsonAdapter) {
     val firstData = json.parse(content, typeOf<T>(), T::class.java)
     val secondContent = json.encode(firstData, typeOf<T>())
