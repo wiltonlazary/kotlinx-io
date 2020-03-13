@@ -1,6 +1,4 @@
-@OptIn(
-    ImplicitReflectionSerializer::class, ExperimentalStdlibApi::class
-)
+@file:OptIn(ImplicitReflectionSerializer::class, ExperimentalStdlibApi::class)
 
 package kotlinx.io.json
 

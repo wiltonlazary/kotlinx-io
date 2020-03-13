@@ -47,14 +47,17 @@ class JsonInputBenchmark {
      * kotlinx.io.json.JsonInputBenchmark.benchmarkParse | datasetName=canada, jsonName=io
      * Success: 69.936 ±(99.9%) 0.189 ms/op [Average]
      * Success: 46.585 ±(99.9%) 0.741 ms/op [Average]
+     * Success: 44.616 ±(99.9%) 0.562 ms/op [Average]
      *
      * kotlinx.io.json.JsonInputBenchmark.benchmarkParse | datasetName=citm, jsonName=io
      * Success: 20.409 ±(99.9%) 0.357 ms/op [Average]
      * Success: 8.466 ±(99.9%) 0.092 ms/op [Average]
+     * Success: 9.241 ±(99.9%) 0.455 ms/op [Average]
      *
      * kotlinx.io.json.JsonInputBenchmark.benchmarkParse | datasetName=twitter, jsonName=io
      * Success: 8.631 ±(99.9%) 0.765 ms/op [Average]
      * Success: 4.811 ±(99.9%) 0.295 ms/op [Average]
+     * Success: 5.089 ±(99.9%) 0.254 ms/op [Average]
      */
     @Benchmark
     fun benchmarkParse() = json.parse(ByteArrayInput(content), type, clazz)
@@ -64,16 +67,22 @@ class JsonInputBenchmark {
      * Success: 53.280 ±(99.9%) 2.214 ms/op [Average]
      * Success: 57.681 ±(99.9%) 5.365 ms/op [Average]
      * Success: 42.659 ±(99.9%) 0.222 ms/op [Average]
+     * Success: 45.783 ±(99.9%) 1.883 ms/op [Average]
+     * Success: 37.650 ±(99.9%) 0.177 ms/op [Average]
      *
      * kotlinx.io.json.JsonInputBenchmark.benchmarkWrite | datasetName=citm, jsonName=io
      * Success: 6.963 ±(99.9%) 0.548 ms/op [Average]
      * Success: 8.104 ±(99.9%) 1.002 ms/op [Average]
      * Success: 5.280 ±(99.9%) 0.034 ms/op [Average]
+     * Success: 5.192 ±(99.9%) 0.351 ms/op [Average]
+     * Success: 4.917 ±(99.9%) 0.058 ms/op [Average]
      *
      * kotlinx.io.json.JsonInputBenchmark.benchmarkWrite | datasetName=twitter, jsonName=io
      * Success: 4.226 ±(99.9%) 0.069 ms/op [Average]
      * Success: 4.920 ±(99.9%) 0.088 ms/op [Average]
      * Success: 4.647 ±(99.9%) 0.057 ms/op [Average]
+     * Success: 4.562 ±(99.9%) 0.220 ms/op [Average]
+     * Success: 4.854 ±(99.9%) 0.076 ms/op [Average]
      */
     @Benchmark
     fun benchmarkWrite(): Output {

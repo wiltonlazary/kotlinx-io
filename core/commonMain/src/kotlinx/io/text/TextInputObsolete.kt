@@ -110,9 +110,10 @@ private inline fun Input.decodeUtf8Chars(crossinline consumer: (Char) -> Boolean
     var value = 0
     var state = STATE_UTF_8
     var count = 0
+    var lastRead = -1
 
-    while (state != STATE_FINISH && !exhausted()) {
-        readBufferRange { buffer, startOffset, endOffset ->
+    while (state != STATE_FINISH && lastRead != 0) {
+        lastRead = readBufferRange { buffer, startOffset, endOffset ->
             for (offset in startOffset until endOffset) {
                 val byte = buffer.loadByteAt(offset).toInt() and 0xff
 
@@ -202,6 +203,7 @@ private inline fun Input.decodeUtf8Chars(crossinline consumer: (Char) -> Boolean
             }
             endOffset - startOffset
         }
+
     }
     return count
 }
