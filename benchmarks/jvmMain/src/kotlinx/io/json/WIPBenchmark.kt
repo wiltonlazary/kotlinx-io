@@ -84,9 +84,18 @@ class WIPBenchmark {
 //        return KxJson.encode(twitterData, typeOf<Twitter>())
 //    }
 
+    /**
+     * Success: 19.919 ±(99.9%) 0.679 ms/op [Average]
+     * Success: 18.854 ±(99.9%) 0.338 ms/op [Average]
+     */
+    @OptIn(ExperimentalStdlibApi::class)
+    @Benchmark
+    fun readCitm(): CitmCatalog = KxJson.parse(citm, typeOf<CitmCatalog>(), CitmCatalog::class.java)
+
     companion object {
         private val canada = Resource("canada.json").readText()
         private val twitter = Resource("twitter.json").readText()
+        private val citm = Resource("citm_catalog.json").readText()
 
         @OptIn(ExperimentalStdlibApi::class)
         private val twitterData = KxJson.parse(twitter, typeOf<Twitter>(), Twitter::class.java)

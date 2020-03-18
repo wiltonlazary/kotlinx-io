@@ -14,6 +14,7 @@ import kotlin.reflect.*
 
 private val twitter = File("benchmarks/commonMain/resources/twitter.json").readText()
 private val canada = File("benchmarks/commonMain/resources/canada.json").readText()
+private val citm = File("benchmarks/commonMain/resources/citm_catalog.json").readText()
 private val canadaBytes = canada.toByteArray()
 
 @OptIn(ExperimentalStdlibApi::class)
@@ -46,6 +47,10 @@ private fun parseCanadaInput(): Canada =
     KxJson.parse(ByteArrayInput(canadaBytes), typeOf<Canada>(), Canada::class.java)
 
 @OptIn(ExperimentalStdlibApi::class)
+private fun readCitm(): CitmCatalog =
+    KxJson.parse(citm, typeOf<CitmCatalog>(), CitmCatalog::class.java)
+
+@OptIn(ExperimentalStdlibApi::class)
 private fun writeCanadaInput(): Output {
     val output = BytesOutput()
     KxJson.encode(canadaData, typeOf<Canada>(), output)
@@ -69,11 +74,12 @@ private fun readReader() {
 }
 
 fun main() {
-    while (true) {
+//    while (true) {
 //        writeCanadaInput()
 //        parseCanadaInput()
 //        parseCanadaGson()
-        writeTwitter()
+//        writeTwitter()
 //        writeTwitterOrigin()
-    }
+    readCitm()
+//    }
 }

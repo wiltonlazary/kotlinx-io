@@ -57,15 +57,14 @@ private fun Output.writeUtf8StringExact(text: CharSequence, index: Int = 0, leng
             var offset = startIndex
 
             while (offset < endIndex) {
-                if (bytes != 0) {
-                    // write remaining bytes of multibyte sequence
+                while (bytes != 0 && offset < endIndex) {
+                    // write remaining bytes of multi-byte sequence
                     buffer[offset++] = (bytes and 0xFF).toByte()
-                    bytes = bytes shr 8
-                    continue
+                    bytes = bytes ushr 8
                 }
 
-                if (textIndex == textEndIndex) {
-                    return@writeBuffer offset
+                if (offset == endIndex || textIndex == textEndIndex) {
+                    break
                 }
 
                 // get next character
@@ -87,48 +86,37 @@ private fun Output.writeUtf8StringExact(text: CharSequence, index: Int = 0, leng
                     else -> character.toInt()
                 }
 
-                // write Utf8 bytes to buffer or queue them for write in `bytes` if not enough space
-                when {
-                    code <= 0x7ff -> {
-                        buffer[offset++] = (0xc0 or ((code shr 6) and 0x1f)).toByte()
-                        val byte1 = (code and 0x3f) or 0x80
-                        if (offset < buffer.size) {
-                            buffer[offset++] = byte1.toByte()
-                        } else {
-                            bytes = byte1
-                        }
-                    }
-                    code <= 0xffff -> {
-                        buffer[offset++] = ((code shr 12) and 0x0f or 0xe0).toByte()
-                        val byte1 = ((code shr 6) and 0x3f) or 0x80
-                        val byte2 = (code and 0x3f) or 0x80
-                        if (offset + 1 < buffer.size) {
-                            buffer[offset++] = byte1.toByte()
-                            buffer[offset++] = byte2.toByte()
-                        } else {
-                            bytes = (byte2 shl 8) or byte1 // order is reversed for writes
-                        }
-                    }
-                    code <= 0x10ffff -> {
-                        buffer[offset++] = ((code shr 18) and 0x07 or 0xf0).toByte()
-                        val byte1 = ((code shr 12) and 0x3f) or 0x80
-                        val byte2 = ((code shr 6) and 0x3f) or 0x80
-                        val byte3 = (code and 0x3f) or 0x80
-                        if (offset + 2 < buffer.size) {
-                            buffer[offset++] = byte1.toByte()
-                            buffer[offset++] = byte2.toByte()
-                            buffer[offset++] = byte3.toByte()
-                        } else {
-                            bytes = (byte3 shl 16) or (byte2 shl 8) or byte1 // order is reversed for faster writes
-                        }
-                    }
-                    else -> malformedCodePoint(code)
-                }
+                bytes = encodeCodePoint(code)
             }
             offset
         }
     }
 }
+
+// Write Utf8 bytes to buffer or queue them for write in `bytes` if not enough space.
+private fun encodeCodePoint(code: Int): Int = when {
+    code <= 0x7ff -> {
+        val byte0 = ((code shr 6) and 0x1F) or 0xC0
+        val byte1 = code.lowBitMask()
+        (byte1 shl 8) or byte0
+    }
+    code <= 0xffff -> {
+        val byte0 = ((code shr 12) and 0x0F) or 0xE0
+        val byte1 = (code shr 6).lowBitMask()
+        val byte2 = code.lowBitMask()
+        (byte2 shl 16) or (byte1 shl 8) or byte0
+    }
+    code <= 0x10ffff -> {
+        val byte0 = ((code shr 18) and 0x07) or 0xF0
+        val byte1 = (code shr 12).lowBitMask()
+        val byte2 = (code shr 6).lowBitMask()
+        val byte3 = code.lowBitMask()
+        (byte3 shl 24) or (byte2 shl 16) or (byte1 shl 8) or byte0
+    }
+    else -> malformedCodePoint(code)
+}
+
+private fun Int.lowBitMask(): Int = ((this and 0x3F) or 0x80) and 0xFF
 
 private fun CharSequence.isASCII(startIndex: Int, length: Int): Boolean {
     for (it in startIndex until startIndex + length) {
