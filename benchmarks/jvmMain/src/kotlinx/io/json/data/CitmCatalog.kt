@@ -28,7 +28,6 @@ data class CitmPerformance(
     val seatMapImage: String?,
     val start: Long,
     val venueCode: String
-
 )
 
 @Serializable

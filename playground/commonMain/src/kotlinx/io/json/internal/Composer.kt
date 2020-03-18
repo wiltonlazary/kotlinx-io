@@ -82,11 +82,10 @@ internal class Composer(@JvmField internal val output: Output, private val json:
     fun printQuoted(value: String): Unit = output.printQuoted(value)
 }
 
-internal fun Output.printQuoted(value: String) {
+private fun Output.printQuoted(value: String) {
     writeByte(STRING_BYTE)
     var lastPos = 0
-    val length = value.length
-    for (index in 0 until length) {
+    for (index in value.indices) {
         val code = value[index].toInt()
 
         if (code >= ESCAPE_CHARS.size) {
@@ -95,12 +94,12 @@ internal fun Output.printQuoted(value: String) {
         }
 
         val escapeSequence = ESCAPE_CHARS[code] ?: continue
-        writeUtf8String(value, lastPos, index - lastPos) // Flush without escape
+        writeUtf8String(value, lastPos, index - lastPos) // Write without escape
         writeUtf8String(escapeSequence)
 
         lastPos = index + 1
     }
 
-    writeUtf8String(value, lastPos, length - lastPos)
+    writeUtf8String(value, lastPos, value.length - lastPos)
     writeByte(STRING_BYTE)
 }

@@ -7,15 +7,30 @@ import kotlin.math.*
 
 private const val lastASCII = 0x7F.toChar()
 
+
+/**
+ * Write [length] bytes in [text] starting from offset [index] to output.
+ *
+ * @throws MalformedInputException if encoding is invalid.
+ */
+public fun Output.writeUtf8String(text: CharSequence, index: Int = 0, length: Int = text.length - index) {
+    if (text.isASCII(index, length)) {
+        writeASCIIString(text, index, length)
+    } else {
+        writeUtf8StringExact(text, index, length)
+    }
+}
+
 public fun Output.writeASCIIString(text: CharSequence, index: Int = 0, length: Int = text.length - index): Int {
     var current = index
-    var remaining = length - index
+    var remaining = length
+
     while (remaining > 0) {
         val written = writeBuffer { buffer, bufferStart, bufferEnd ->
             val count = min(bufferEnd - bufferStart, remaining)
 
             for (offset in 0 until count) {
-                buffer.storeByteAt(bufferStart + offset, text[current + offset].toByte())
+                buffer[bufferStart + offset] = text[current + offset].toByte()
             }
 
             bufferStart + count
@@ -32,12 +47,7 @@ public fun Output.writeASCIIString(text: CharSequence, index: Int = 0, length: I
     return length - index
 }
 
-/**
- * Write [length] bytes in [text] starting from offset [index] to output.
- *
- * @throws MalformedInputException if encoding is invalid.
- */
-public fun Output.writeUtf8String(text: CharSequence, index: Int = 0, length: Int = text.length - index) {
+private fun Output.writeUtf8StringExact(text: CharSequence, index: Int = 0, length: Int = text.length - index) {
     var textIndex = index // index in text
     val textEndIndex = index + length // index of char after last
     var bytes = 0 // current left bytes to write (in inverted order)
@@ -118,7 +128,16 @@ public fun Output.writeUtf8String(text: CharSequence, index: Int = 0, length: In
             offset
         }
     }
-    flush()
+}
+
+private fun CharSequence.isASCII(startIndex: Int, length: Int): Boolean {
+    for (it in startIndex until startIndex + length) {
+        if (this[it] > lastASCII) {
+            return false
+        }
+    }
+
+    return true
 }
 
 /**

@@ -4,7 +4,6 @@ import kotlinx.io.*
 import kotlinx.io.bytes.*
 import kotlinx.io.json.data.*
 import kotlinx.io.json.utils.*
-import kotlinx.io.text.*
 import org.openjdk.jmh.annotations.*
 import java.util.concurrent.*
 import kotlin.reflect.*
@@ -54,10 +53,10 @@ class WIPBenchmark {
      * previous + explicit buffer and array size: Success: 3.048 ±(99.9%) 0.096 ms/op [Average]
      * previous + utf8 -> ascii writer: Success: 1.408 ±(99.9%) 0.056 ms/op [Average]
      */
-    @Benchmark
-    fun benchmarkStringByteArrayWithInput(): ByteArray = buildInput(canada.length * 2) {
-        writeASCIIString(canada)
-    }.readByteArray(canadaBytes.size)
+//    @Benchmark
+//    fun benchmarkStringByteArrayWithInput(): ByteArray = buildInput(canada.length * 2) {
+//        writeASCIIString(canada)
+//    }.readByteArray(canadaBytes.size)
 
 //    Success: 0.280 ±(99.9%) 0.030 ms/op [Average]
 //    @Benchmark
@@ -73,8 +72,24 @@ class WIPBenchmark {
 //
 //    }
 
+    /**
+     * from length to indexes
+     *      Success: 10.322 ±(99.9%) 0.301 ms/op [Average]
+     * Add fast-path check for ascii
+     *      Success: 4.938 ±(99.9%) 0.242 ms/op [Average]
+     */
+//    @OptIn(ExperimentalStdlibApi::class)
+//    @Benchmark
+//    fun writeTwitter(): String {
+//        return KxJson.encode(twitterData, typeOf<Twitter>())
+//    }
+
     companion object {
         private val canada = Resource("canada.json").readText()
+        private val twitter = Resource("twitter.json").readText()
+
+        @OptIn(ExperimentalStdlibApi::class)
+        private val twitterData = KxJson.parse(twitter, typeOf<Twitter>(), Twitter::class.java)
         private val canadaBytes = canada.toByteArray()
 
         @OptIn(ExperimentalStdlibApi::class)

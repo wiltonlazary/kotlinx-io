@@ -15,7 +15,11 @@ import kotlin.reflect.*
 private val twitter = File("benchmarks/commonMain/resources/twitter.json").readText()
 private val canada = File("benchmarks/commonMain/resources/canada.json").readText()
 private val canadaBytes = canada.toByteArray()
+
+@OptIn(ExperimentalStdlibApi::class)
 val canadaData = KxJson.parse(ByteArrayInput(canadaBytes), typeOf<Canada>(), Canada::class.java)
+
+@OptIn(ExperimentalStdlibApi::class)
 val twitterData = KxJson.parse(twitter, typeOf<Twitter>(), Twitter::class.java)
 
 private val smallTextBytesASCII = "ABC.".toByteArray()
@@ -27,21 +31,28 @@ private val largeTextPacketASCII = BytesOutput().apply {
     writeByteArray(largeTextBytesASCII)
 }
 
+@OptIn(ExperimentalStdlibApi::class)
 private fun parseTwitter(): Twitter =
     KxJson.parse(twitter, typeOf<Twitter>(), Twitter::class.java)
 
+@OptIn(ExperimentalStdlibApi::class)
 private fun writeTwitter() = KxJson.encode(twitterData, typeOf<Twitter>())
+
+@OptIn(ExperimentalStdlibApi::class)
 private fun writeTwitterOrigin() = SerializationJson.encode(twitterData, typeOf<Twitter>())
 
+@OptIn(ExperimentalStdlibApi::class)
 private fun parseCanadaInput(): Canada =
     KxJson.parse(ByteArrayInput(canadaBytes), typeOf<Canada>(), Canada::class.java)
 
+@OptIn(ExperimentalStdlibApi::class)
 private fun writeCanadaInput(): Output {
     val output = BytesOutput()
     KxJson.encode(canadaData, typeOf<Canada>(), output)
     return output
 }
 
+@OptIn(ExperimentalStdlibApi::class)
 private fun parseCanadaGson(): Canada =
     GsonJson.parse(ByteArrayInputStream(canadaBytes), typeOf<Canada>(), Canada::class.java)
 
