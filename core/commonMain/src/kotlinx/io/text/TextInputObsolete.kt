@@ -260,59 +260,9 @@ private val Utf8StateMachine = intArrayOf(
 )
 
 private const val STATE_FINISH = -2
+
 //private const val Utf8_STATE_ASCII = -1
 internal const val STATE_UTF_8 = 0
 internal const val STATE_REJECT = 1
 
-private inline fun Input.decodeUtf8(crossinline consumer: (Int) -> Boolean) {
-    val stateMachine = Utf8StateMachine
-    var state = STATE_UTF_8
-    var codePoint = 0
 
-    while (state != STATE_FINISH) {
-        readBufferRange { buffer, startOffset, endOffset ->
-            for (index in startOffset until endOffset) {
-                val byte = buffer.loadByteAt(index).toInt() and 0xff
-
-                val type = stateMachine[byte]
-                codePoint = if (state == STATE_UTF_8)
-                    (0xff ushr type) and byte
-                else
-                    (byte and 0x3f) or (codePoint shl 6)
-                state = stateMachine[256 + state + type]
-
-                // TODO: Attempt to recover from bad states
-                when (state) {
-                    STATE_UTF_8 -> when {
-                        codePoint <= MaxCodePoint -> {
-                            if (!consumer(codePoint)) {
-                                state = STATE_FINISH // signal to exit loop
-                                // must return consumed bytes for Input positions to be updated in readBuffer
-                                return@readBufferRange index - startOffset
-                            }
-                        }
-                        else -> malformedInput(codePoint)
-                    }
-                    STATE_REJECT -> malformedInput(codePoint)
-                    else -> {
-                        /* need more bytes to read the code point */
-                    }
-                }
-            }
-            endOffset - startOffset
-        }
-    }
-}
-
-private inline fun Input.decodeUtf8CharsAlt(crossinline consumer: (Char) -> Boolean) {
-    decodeUtf8 { codePoint ->
-        when {
-            codePoint ushr 16 == 0 -> consumer(codePoint.toChar())
-            else -> {
-                val high = highSurrogate(codePoint).toChar()
-                val low = lowSurrogate(codePoint).toChar()
-                consumer(high) && consumer(low)
-            }
-        }
-    }
-}

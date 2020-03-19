@@ -1,7 +1,7 @@
 package kotlinx.io
 
 import kotlinx.io.buffer.*
-import kotlinx.io.text.*
+import kotlinx.io.text.utf8.*
 import org.junit.Test
 import java.io.*
 import kotlin.io.DEFAULT_BUFFER_SIZE

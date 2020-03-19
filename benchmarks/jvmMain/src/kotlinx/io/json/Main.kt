@@ -74,12 +74,12 @@ private fun readReader() {
 }
 
 fun main() {
-//    while (true) {
+    repeat(10000) {
 //        writeCanadaInput()
 //        parseCanadaInput()
 //        parseCanadaGson()
 //        writeTwitter()
 //        writeTwitterOrigin()
-    readCitm()
-//    }
+        readCitm()
+    }
 }

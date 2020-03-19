@@ -105,11 +105,9 @@ internal fun ByteArray.initC2TC(c: Char, cl: Byte) {
     initC2TC(c.toInt(), cl)
 }
 
-internal fun charToTokenClass(char: Byte): Byte = if (char.toInt() < CTC_MAX
-) C2TC[char.toInt()] else TC_OTHER
+internal fun charToTokenClass(char: Byte): Byte = if (char.toInt() < CTC_MAX) C2TC[char.toInt()] else TC_OTHER
 
-internal fun charToTokenClass(char: Char): Byte = if (char.toInt() < CTC_MAX
-) C2TC[char.toInt()] else TC_OTHER
+internal fun charToTokenClass(char: Char): Byte = if (char.toInt() < CTC_MAX) C2TC[char.toInt()] else TC_OTHER
 
 internal fun escapeToChar(c: Int): Char = if (c < ESC2C_MAX
 ) ESCAPE_2_CHAR[c] else INVALID

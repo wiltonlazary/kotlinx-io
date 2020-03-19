@@ -2,7 +2,7 @@ package kotlinx.io.json.internal
 
 import kotlinx.io.*
 import kotlinx.io.json.*
-import kotlinx.io.text.*
+import kotlinx.io.text.utf8.*
 import kotlin.jvm.*
 
 @OptIn(ExperimentalStdlibApi::class)

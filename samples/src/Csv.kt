@@ -3,6 +3,7 @@ import kotlinx.io.Console
 import kotlinx.io.bytes.*
 import kotlinx.io.compat.*
 import kotlinx.io.text.*
+import kotlinx.io.text.utf8.*
 import java.io.*
 
 

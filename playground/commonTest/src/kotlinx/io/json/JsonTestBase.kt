@@ -6,11 +6,10 @@ package kotlinx.io.json
 
 import kotlinx.io.bytes.*
 import kotlinx.io.json.internal.*
-import kotlinx.io.text.*
+import kotlinx.io.text.utf8.*
 import kotlinx.serialization.*
 import kotlinx.serialization.builtins.*
 import kotlinx.serialization.json.*
-import kotlinx.serialization.list
 import kotlinx.serialization.modules.*
 import kotlin.test.*
 

@@ -2,7 +2,7 @@ package kotlinx.io
 
 import kotlinx.benchmark.*
 import kotlinx.io.bytes.*
-import kotlinx.io.text.*
+import kotlinx.io.text.utf8.*
 
 private const val content = "file content with unicode 🌀 : здороваться : 여보세요 : 你好 : ñç."
 

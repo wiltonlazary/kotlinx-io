@@ -7,6 +7,7 @@ import kotlinx.io.*
 import kotlinx.io.bytes.*
 import kotlinx.io.json.internal.*
 import kotlinx.io.text.*
+import kotlinx.io.text.utf8.*
 import kotlinx.serialization.*
 import kotlinx.serialization.json.*
 import kotlinx.serialization.modules.*

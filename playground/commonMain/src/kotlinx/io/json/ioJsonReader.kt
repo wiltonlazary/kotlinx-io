@@ -37,8 +37,7 @@ internal class ioJsonReader(private val source: Input) {
 
         source.preview {
             readUntilExclusive {
-                if (charToTokenClass(it) == TC_OTHER
-                ) {
+                if (charToTokenClass(it) == TC_OTHER) {
                     append(it.toChar())
                     return@readUntilExclusive true
                 } else {

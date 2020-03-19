@@ -2,6 +2,7 @@ package kotlinx.io.text
 
 import kotlinx.io.*
 import kotlinx.io.bytes.*
+import kotlinx.io.text.utf8.*
 import kotlin.test.*
 
 class OutputStringTest {

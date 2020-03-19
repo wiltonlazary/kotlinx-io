@@ -45,7 +45,7 @@ fun Input.decodeUtf8CharsAlt(consumer: (Char) -> Boolean) {
     }
 }
 
-private fun Input.decodeUtf8(consumer: (Int) -> Boolean) {
+internal inline fun Input.decodeUtf8(crossinline consumer: (Int) -> Boolean) {
     val stateMachine = Utf8StateMachine
     var state = STATE_UTF_8
     var codePoint = 0

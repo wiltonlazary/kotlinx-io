@@ -2,6 +2,7 @@ package kotlinx.io.gzip
 
 import kotlinx.io.*
 import kotlinx.io.text.*
+import kotlinx.io.text.utf8.*
 
 @ExperimentalStdlibApi
 fun main() {
