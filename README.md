@@ -1,166 +1,100 @@
+# kotlinx-io
 
-`kotlinx-io` is a multiplatform library for 
-processing binary data, 
-working with memory blocks,
-interacting with the platform,
-and performing other low level operations.  
+[![Kotlin Alpha](https://kotl.in/badges/alpha.svg)](https://kotlinlang.org/docs/components-stability.html)
+[![JetBrains incubator project](https://jb.gg/badges/incubator.svg)](https://confluence.jetbrains.com/display/ALL/JetBrains+on+GitHub)
+[![GitHub license](https://img.shields.io/github/license/kotlin/kotlinx-io)](LICENSE)
+[![Download](https://img.shields.io/maven-central/v/org.jetbrains.kotlinx/kotlinx-io-core)](https://central.sonatype.com/artifact/org.jetbrains.kotlinx/kotlinx-io-core/)
+[![Kotlin](https://img.shields.io/badge/kotlin-2.0-blue.svg?logo=kotlin)](http://kotlinlang.org)
+[![TeamCity build](https://img.shields.io/teamcity/build/s/KotlinTools_KotlinxIo_BuildAggregated.svg?server=http%3A%2F%2Fteamcity.jetbrains.com)](https://teamcity.jetbrains.com/viewType.html?buildTypeId=KotlinTools_KotlinxIo_BuildAggregated&guest=1)
+[![KDoc link](https://img.shields.io/badge/API_reference-KDoc-blue)](https://kotlin.github.io/kotlinx-io/)
 
-![Experimental](https://img.shields.io/badge/kotlinx-experimental-orange.svg?style=flat)
-[![Download](https://api.bintray.com/packages/kotlin/kotlinx/kotlinx.io/images/download.svg) ](https://bintray.com/kotlin/kotlinx/kotlinx.io/_latestVersion)
+A multiplatform Kotlin library providing basic IO primitives. `kotlinx-io` is based on [Okio](https://github.com/square/okio) but does not preserve backward compatibility with it.
 
-NOTE: master contains version 0.2.x and is *experimental*. Any API is a subject to change. If you're looking for multiplatform releases of older versions, you can check [ktor-io](https://github.com/ktorio/ktor/tree/master/ktor-io). See https://github.com/Kotlin/kotlinx-io/issues/54 for more details.
+## Overview
+**kotlinx-io** is built around `Buffer` - a mutable sequence of bytes.
 
-# Structure
+`Buffer` works like a queue, allowing to read data from its head or to write data to its tail.
+`Buffer` provides functions to read and write data of different built-in types, and to copy data to or from other `Buffer`s.
+Depending on the target platform, extension functions allowing data exchange with platform-specific types are also available.
 
-NOTE: This part represents the target vision of the package. Most modules are still unavailable.
+A `Buffer` consists of segments organized as a linked list: segments allow reducing memory allocations during the buffer's expansion and copy,
+with the latter achieved by delegating or sharing the ownership over the underlying buffer's segments with other buffers.
 
-`kotlinx-io` package has many modules and you can use as much as you need. 
+**kotlinx-io** provides interfaces representing data sources and destinations - `Source` and `Sink`,
+and in addition to the *mutable* `Buffer` the library also provides an *immutable* sequence of bytes - `ByteString`.
 
-* `core` – defines all the low-level functionality for working with binary data and basic text.
-* `async` – (unavailable) implements asynchronous versions of input and output data streams.
-* `platform` – (unavailable) provides low-level platform facilities such as reading or writing from/to a file.
-* `sockets` – (unavailable) provides low-level functionality for interacting with network.
-* `cryptography` – (unavailable) provides encryption & decryption functionality.
-* `compression` – (unavailable) provides compression & decompression functionality.
-* `files` – (unavailable) provides advanced file system functionality such as working with paths and directories. 
+An experimental filesystem support is shipped under the `kotlinx.io.files` package,
+which includes the `FileSystem` interface and its default implementation - `SystemFileSystem`.
 
-# Core 
+`FileSystem` provides basic operations for working with files and directories, which are represented by yet another class under the same package - `Path`.
 
-This module provides few core I/O primitives that are used across other modules and can be used to define
-custom binary inputs and outputs, as well as processing raw memory.
+There are two `kotlinx-io` modules:
+- [kotlinx-io-bytestring](./bytestring) - provides `ByteString`.
+- [kotlinx-io-core](./core) - provides IO primitives (`Buffer`, `Source`, `Sink`), filesystems support, depends on `kotlinx-io-bytestring`.
 
-* `Buffer` – represents a continuous memory block of specific size. 
-Provides direct positional read and write operations for primitives and arrays of primitives. 
-* `Input` – represents a source of bytes. Provides sequential reading functionality and a special `preview` mode
-for processing bytes without discarding them. 
-* `Output` – represents a destination for bytes. Provides sequential writing functionality. 
-* `Bytes` – represents binary data of arbitrary size, potentially spanned across several buffers.
-Can be built using using `Output` and can be read using `Input`.
+## Using in your projects
 
-It also has basic facilities for working with text, with UTF-8 implemented efficiently in core, 
-and `Charsets` giving access to platform-dependent functionality for converting text into bytes and back.
+> Note that the library is experimental, and the API is subject to change.
 
-## Buffers
+### Gradle
 
-Buffer is direct representation of memory on the target platform implemented using efficient platform-dependent 
-mechanisms. A buffer of arbitrary size can be allocated and released using `PlatformBufferAllocator`. 
-It is user's responsibility to release an allocated buffer. 
-
+Make sure that you have `mavenCentral()` in the list of repositories:
 ```kotlin
-    val buffer = PlatformBufferAllocator.allocate(8) // allocates a buffer of 8 bytes
-    buffer.storeLongAt(0, 123451234567890L) // stores a long value at offset 0
-    val longValue = buffer.loadLongAt(0) // reads back a long value
-```
-
-All operations with a `Buffer` are performed in network byte order (Big-Endian). 
-There are helper functions `reverseByteOrder` defined for all primitive types to reverse the byte order when it is needed. 
-
-## Inputs
-
-An `Input` is a high-performance buffered entity for reading data from an underlying source.  
-It is an abstract class with only few abstract methods and a plentiful of convenience built around them. 
-There are functions to read primitives, arrays of primitives, higher-level extension methods for reading UTF-8 text,
-text encoded with a custom `Charset`, and more. One can define any other read methods using extensions and provided primitives.
-
-`Input` design doesn't provide facilities for direct manipulation of the current reading position, 
-but instead it has the `preview` mechanism which we believe is a lot safer, efficient and enough for most look-ahead
-scenarios.
-
-Preview operation instructs `Input` to start accumulating buffers instead of discarding them when they are exhausted,
-thus making it possible to revert to the initial position without performing additional I/O operations. 
-
-```kotlin
-    input.readLong() // (0) reads long value and discards bytes
-    input.preview {  // (1) begins preview operation and stops discarding bytes
-        readShort() // (2) read short value and keep the bytes
-    } // completes preview operation and rewinds the input to the state (1) 
-    input.readShort()  // (3) reads short value from (2) again
-```   
-
-Note that `preview` function provides another, nested `Input` to the lambda as a receiver 
-which should be used for all preview reads. 
-Implementation can choose to alter original `Input` state or create a new instance, 
-so one should always be using the instance provided as a receiver to `preview`. 
-
-Preview operations can be nested, each keeping its own state and position, thus making it possible to compose
-operations on Inputs.
-
-## Outputs
-
-An `Output` is a high-performance buffered entity for writing data to an underlying destination. 
-Like `Input`, it provides all the primitive operations as well as a number of convenience functions for text output.
-
-Similarly, `Output` doesn't provide a mechanism to rewind backwards and update data, but using `Bytes` one can easily
-implement complex scenarios such as writing a size before a block, calculating hashes and so on. 
-
-## Bytes
-
-A `Bytes` type is useful for transferring data between various endpoints, accumulating data in memory or sending 
-repetitive bytes to different outputs. 
-
-`Bytes` can be produced by building function `buildBytes { … }` where lambda has an `Output` as a receiver, 
-thus making it possible to conveniently generate content, or use in any I/O operations or custom user's functions. 
-
-```kotlin
-    val bytes = buildBytes {
-        writeLong(0x0001020304050607)
-        writeShort(0x0809)
-    }
-```
-
-When you have a `Bytes` instance, you can know the number of bytes stored, and can obtain an `Input` to read these bytes.
-Creating an `Input` is a zero-copy operation, underlying mechanics simply reuses buffers for reading data.
-
-```kotlin
-    val input = bytes.input()
-    input.readLong() 
-```  
-
-Writing such an instance into `Output` is also zero-copy operation, since implementation will send existing buffers
-to the underlying destination. 
-
-```kotlin
-    output.writeBytes(bytes)
-```
-
-Combining these features makes it possible to write domain-specific functions for complex data writing:
-
-```kotlin
-fun Output.writeWithSizeAndHash(writer: Output.()->Unit) {
-    val bytes = buildBytes(writer)
-    writeInt(bytes.size)
-    writeBytes(bytes)
-    val hash = bytes.input().calculateHash()
-    writeLong(hash)
+repositories {
+    mavenCentral()
 }
-``` 
+```
 
-## Text
-
-[TBD] Efficient UTF-8 and platform-dependent Charsets
-
-## Pools
-
-[TBD] Allocating and releasing a buffer each time one is needed can be inefficient, 
-so the package provides facilities for buffer pools.
-
-# Async
-
-[TBD] `InputChannel` and `OutputChannel` as an asynchronous (suspending) versions of `Input` and `Output`
- 
-
-# Platform
-
-[TBD]
-* `FileInput` and `FileOutput` with a very limited set of operations such as `open`. No paths, no directories, no access control.
-* `Process` type for launching an external processes, and interacting with their inputs and outputs.
-* `Environment` type for interacting with environment variables.
-
-# Adding a dependency
-
-```gradle
+Add the library to dependencies:
+```kotlin
 dependencies {
-    compile "org.jetbrains.kotlinx:kotlinx-io-jvm:$kotlinx_io_version"
+    implementation("org.jetbrains.kotlinx:kotlinx-io-core:0.5.4")
 }
 ```
 
+In multiplatform projects, add a dependency to the `commonMain` source set dependencies:
+```kotlin
+kotlin {
+    sourceSets {
+        commonMain {
+            dependencies {
+                implementation("org.jetbrains.kotlinx:kotlinx-io-core:0.5.4")
+            }
+        }
+    }
+}
+```
+
+### Maven
+
+Add the library to dependencies:
+```xml
+<dependency>
+    <groupId>org.jetbrains.kotlinx</groupId>
+    <artifactId>kotlinx-io-core-jvm</artifactId>
+    <version>0.5.4</version>
+</dependency>
+```
+
+### Android
+
+`kotlinx-io` is not tested on Android on a regular basis,
+but the library is compatible with Android 5.0+ (API level 21+).
+
+## Contributing
+
+Read the [Contributing Guidelines](CONTRIBUTING.md).
+
+## Code of Conduct
+This project and the corresponding community are governed by the [JetBrains Open Source and Community Code of Conduct](https://confluence.jetbrains.com/display/ALL/JetBrains+Open+Source+and+Community+Code+of+Conduct). Please make sure you read it.
+
+## License
+kotlinx-io is licensed under the [Apache 2.0 License](LICENSE).
+
+## Credits
+
+Thanks to everyone involved in the project.
+
+An honorable mention goes to the developers of [Okio](https://square.github.io/okio/) 
+that served as the foundation for `kotlinx-io` and to [Jesse Wilson](https://github.com/swankjesse),
+for the help with `Okio` adaption, his suggestions, assistance and guidance with `kotlinx-io` development.
