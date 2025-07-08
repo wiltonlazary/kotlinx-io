@@ -1,5 +1,34 @@
 # CHANGELOG
 
+## 0.8.0
+> Published 24 June 2025
+
+### Features
+- Updated Kotlin version to 2.2, Dokka to 2.0.0 and also updated few other dependencies [#455](https://github.com/Kotlin/kotlinx-io/pull/455), [#432](https://github.com/Kotlin/kotlinx-io/pull/432), [#442](https://github.com/Kotlin/kotlinx-io/pull/442), [#456](https://github.com/Kotlin/kotlinx-io/pull/456)
+- Increased deprecation level for `kotlinx.io.files.Path.source` and `kotlinx.io.files.Path.sink` to `ERROR` [#457](https://github.com/Kotlin/kotlinx-io/pull/457)
+### Bugfixes
+- Fixed `ArrayIndexOutOfBoundsException` thrown from `okio.Sink.asKotlinxIoRawSink` [#453](https://github.com/Kotlin/kotlinx-io/pull/453)
+
+## 0.7.0
+> Published 26 February 2025
+ 
+### Features
+- Implemented Okio adapters shipped in a `kotlinx-io-okio` module [#178](https://github.com/Kotlin/kotlinx-io/issues/178)
+- Bumped up the Kotlin version to 2.1, as well as version of some dependencies [#426](https://github.com/Kotlin/kotlinx-io/issues/426)
+
+### Bugfixes
+- Error codes from various POSIX-ish calls are now always checked and propagated [#262](https://github.com/Kotlin/kotlinx-io/issues/262)
+- Behavior of `indexOf` functions accepting `ByteString` is now aligned with `CharSequence.indexOf` [#422](https://github.com/Kotlin/kotlinx-io/issues/422), [#423](https://github.com/Kotlin/kotlinx-io/issues/423)
+
+## 0.6.0
+> Published 19 November 2024
+
+### Features
+- On JVM, libraries now include Java Platform Module System (JPMS) modules [#406](https://github.com/Kotlin/kotlinx-io/pull/406)
+- Made Segment's size and capacity public [#409](https://github.com/Kotlin/kotlinx-io/pull/409)
+- Improved performance of extension functions reading and writing using little-endian byte order [#414](https://github.com/Kotlin/kotlinx-io/pull/414)
+- Minor documentation improvements
+
 ## 0.5.4
 > Published 17 September 2024
 

@@ -4,7 +4,7 @@
 [![JetBrains incubator project](https://jb.gg/badges/incubator.svg)](https://confluence.jetbrains.com/display/ALL/JetBrains+on+GitHub)
 [![GitHub license](https://img.shields.io/github/license/kotlin/kotlinx-io)](LICENSE)
 [![Download](https://img.shields.io/maven-central/v/org.jetbrains.kotlinx/kotlinx-io-core)](https://central.sonatype.com/artifact/org.jetbrains.kotlinx/kotlinx-io-core/)
-[![Kotlin](https://img.shields.io/badge/kotlin-2.0-blue.svg?logo=kotlin)](http://kotlinlang.org)
+[![Kotlin](https://img.shields.io/badge/kotlin-2.2-blue.svg?logo=kotlin)](http://kotlinlang.org)
 [![TeamCity build](https://img.shields.io/teamcity/build/s/KotlinTools_KotlinxIo_BuildAggregated.svg?server=http%3A%2F%2Fteamcity.jetbrains.com)](https://teamcity.jetbrains.com/viewType.html?buildTypeId=KotlinTools_KotlinxIo_BuildAggregated&guest=1)
 [![KDoc link](https://img.shields.io/badge/API_reference-KDoc-blue)](https://kotlin.github.io/kotlinx-io/)
 
@@ -28,9 +28,10 @@ which includes the `FileSystem` interface and its default implementation - `Syst
 
 `FileSystem` provides basic operations for working with files and directories, which are represented by yet another class under the same package - `Path`.
 
-There are two `kotlinx-io` modules:
+There are several `kotlinx-io` modules:
 - [kotlinx-io-bytestring](./bytestring) - provides `ByteString`.
 - [kotlinx-io-core](./core) - provides IO primitives (`Buffer`, `Source`, `Sink`), filesystems support, depends on `kotlinx-io-bytestring`.
+- [kotlinx-io-okio](./integration/okio) - bridges `kotlinx-io` and `Okio` `ByteString`, `kotlinx.io.RawSource` and `okio.Source`, `kotlinx.io.RawSink` and `okio.Sink`. 
 
 ## Using in your projects
 
@@ -48,7 +49,7 @@ repositories {
 Add the library to dependencies:
 ```kotlin
 dependencies {
-    implementation("org.jetbrains.kotlinx:kotlinx-io-core:0.5.4")
+    implementation("org.jetbrains.kotlinx:kotlinx-io-core:0.8.0")
 }
 ```
 
@@ -58,7 +59,7 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                implementation("org.jetbrains.kotlinx:kotlinx-io-core:0.5.4")
+                implementation("org.jetbrains.kotlinx:kotlinx-io-core:0.8.0")
             }
         }
     }
@@ -72,9 +73,19 @@ Add the library to dependencies:
 <dependency>
     <groupId>org.jetbrains.kotlinx</groupId>
     <artifactId>kotlinx-io-core-jvm</artifactId>
-    <version>0.5.4</version>
+    <version>0.8.0</version>
 </dependency>
 ```
+
+### JPMS support
+
+On JVM, `kotlinx-io` supports Java Modules:
+- `kotlinx-io-bytestring` library provides `kotlinx.io.bytestring` module; 
+- `kotlinx-io-core` library provides `kotlinx.io.core` module.
+- `kotlinx-io-okio` library provides `kotlinx.io.okio` module.
+
+Read [this](https://kotlinlang.org/docs/gradle-configure-project.html#configure-with-java-modules-jpms-enabled) article 
+for details on how to configure a Gradle project to utilize JPMS.
 
 ### Android
 

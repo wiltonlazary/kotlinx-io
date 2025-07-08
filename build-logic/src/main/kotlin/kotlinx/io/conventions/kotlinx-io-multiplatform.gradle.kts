@@ -3,10 +3,12 @@
  * Use of this source code is governed by the Apache 2.0 license that can be found in the LICENCE file.
  */
 
+import kotlinx.io.build.configureJava9ModuleInfoCompilation
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
+import org.jetbrains.kotlin.gradle.dsl.JvmDefaultMode
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
-import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
 import kotlin.jvm.optionals.getOrNull
 
 plugins {
@@ -21,7 +23,7 @@ kotlin {
         freeCompilerArgs.add("-Xexpect-actual-classes")
     }
 
-    val versionCatalog: VersionCatalog = extensions.getByType<VersionCatalogsExtension>().named("libs")
+    val versionCatalog: VersionCatalog = project.extensions.getByType<VersionCatalogsExtension>().named("libs")
     jvmToolchain {
         val javaVersion = versionCatalog.findVersion("java").getOrNull()?.requiredVersion
             ?: throw GradleException("Version 'java' is not specified in the version catalog")
@@ -29,18 +31,26 @@ kotlin {
     }
 
     jvm {
-        withJava()
         testRuns["test"].executionTask.configure {
             useJUnitPlatform()
         }
-        // can be replaced with just `compilerOptions { }` in Kotlin 2.0
-        compilations.configureEach {
-            compileTaskProvider.configure {
-                compilerOptions {
-                    freeCompilerArgs.add("-Xjvm-default=all")
-                }
-            }
+        compilerOptions {
+            jvmDefault = JvmDefaultMode.NO_COMPATIBILITY
         }
+
+        val mrjToolchain = versionCatalog.findVersion("multi.release.toolchain").getOrNull()?.requiredVersion
+            ?: throw GradleException("Version 'multi.release.toolchain' is not specified in the version catalog")
+
+        // N.B.: it seems like modules don't work well with "regular" multi-release compilation,
+        // so if we need to compile some Kotlin classes for a specific JDK release, a separate compilation is needed.
+        configureJava9ModuleInfoCompilation(
+            sourceSetName = project.sourceSets.create("java9ModuleInfo") {
+                java.srcDir("jvm/module")
+            }.name,
+            parentCompilation = compilations.getByName("main"),
+            moduleName = project.name.replace("-", "."),
+            toolchainVersion = JavaLanguageVersion.of(mrjToolchain)
+        )
     }
 
     js {
@@ -104,6 +114,15 @@ kotlin {
             }
         }
     }
+
+    tasks {
+        val jvmJar by existing(Jar::class) {
+            manifest {
+                attributes("Multi-Release" to true)
+            }
+            from(project.sourceSets["java9ModuleInfo"].output)
+        }
+    }
 }
 
 fun KotlinSourceSet.configureSourceSet() {
@@ -121,6 +140,8 @@ fun KotlinSourceSet.configureSourceSet() {
 }
 
 private fun KotlinMultiplatformExtension.nativeTargets() {
+    val configureAllTargets = project.findProperty("kotlinx.io.okio.compat.targets")?.toString()?.toBoolean() != true
+
     iosX64()
     iosArm64()
     iosSimulatorArm64()
@@ -135,15 +156,19 @@ private fun KotlinMultiplatformExtension.nativeTargets() {
     watchosSimulatorArm64()
     watchosDeviceArm64()
 
-    androidNativeArm32()
-    androidNativeArm64()
-    androidNativeX64()
-    androidNativeX86()
+    if (configureAllTargets) {
+        androidNativeArm32()
+        androidNativeArm64()
+        androidNativeX64()
+        androidNativeX86()
+    }
 
     linuxX64()
     linuxArm64()
-    @Suppress("DEPRECATION") // https://github.com/Kotlin/kotlinx-io/issues/303
-    linuxArm32Hfp()
+    if (configureAllTargets) {
+        @Suppress("DEPRECATION") // https://github.com/Kotlin/kotlinx-io/issues/303
+        linuxArm32Hfp()
+    }
 
     macosX64()
     macosArm64()
